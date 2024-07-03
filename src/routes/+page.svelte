@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ResourceCard from './ResourceCard.svelte';
+	import ResourceCard from './components/ResourceCard.svelte';
 	import { compactView } from '$lib';
 
 	export let data;

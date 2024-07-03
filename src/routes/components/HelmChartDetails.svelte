@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { A } from 'flowbite-svelte';
 	import YamlModalButton from './YamlModalButton.svelte';
-	import type { GitRepository } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1';
 	import ResourceDetails from './ResourceDetails.svelte';
+	import type { HelmChart } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1beta2';
+	import ResourceCard from './ResourceCard.svelte';
+	import ResourceCardListItem from './ResourceCardListItem.svelte';
 
-	// export let resource: KubernetesObject & { status: string };
-	export let resource: GitRepository;
+	export let resource: HelmChart;
 
-	// let label = `${resource.metadata?.namespace}/${resource.metadata?.name}`;
 	let status = resource.status?.conditions
 		? resource.status?.conditions[0]
 		: { type: 'Unknown', status: 'unknown' };
@@ -19,8 +19,12 @@
 		statusClasses += ' text-orange-500';
 	}
 
+	let version = resource.spec?.version;
+
 	// Drop timezone text from date string
-	const updated = new Date(resource.status!.artifact!.lastUpdateTime).toString().split(' (')[0];
+	const updated = resource.status?.artifact?.lastUpdateTime
+		? new Date(resource.status!.artifact!.lastUpdateTime).toString().split(' (')[0]
+		: 'Never';
 </script>
 
 <ResourceDetails>
@@ -28,14 +32,10 @@
 	<span class="">Name: {resource.metadata?.name}</span>
 	<span>Status: <span class={statusClasses}>{status.type}</span></span>
 	<span>
-		Url:
-		{#if resource.spec?.url.startsWith('https://')}
-			<A class="text-slate-400" href={resource.spec?.url}>{resource.spec?.url}</A>
-		{:else}
-			<span class="text-slate-400">{resource.spec?.url}</span>
-		{/if}
+		Chart:
+		<span class="text-slate-400">{resource.spec?.sourceRef.name}/{resource.spec?.chart}</span>
 	</span>
-	<span>Revision: {resource.status?.artifact?.revision}</span>
+	<span>Version: {version}</span>
 	<span>Updated: {updated}</span>
 	<YamlModalButton {resource} />
 </ResourceDetails>

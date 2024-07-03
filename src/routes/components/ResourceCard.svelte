@@ -4,6 +4,9 @@
 	import { compactView } from '$lib';
 	import GitRepoDetails from './GitRepoDetails.svelte';
 	import OciRepoDetails from './OciRepoDetails.svelte';
+	import HelmRepoDetails from './HelmRepoDetails.svelte';
+	import HelmChartDetails from './HelmChartDetails.svelte';
+	import HelmReleaseDetails from './HelmReleaseDetails.svelte';
 
 	export let key: string;
 	export let items: any[];
@@ -26,6 +29,12 @@
 				<GitRepoDetails resource={r} />
 			{:else if key == 'ocirepos'}
 				<OciRepoDetails resource={r} />
+			{:else if key == 'helmrepos'}
+				<HelmRepoDetails resource={r} />
+			{:else if key == 'helmcharts'}
+				<HelmChartDetails resource={r} />
+			{:else if key == 'helmreleases'}
+				<HelmReleaseDetails resource={r} />
 			{:else}
 				<p>Detailed resource view not implemented for {key}</p>
 			{/if}
