@@ -1,12 +1,12 @@
 import * as k8s from '@kubernetes/client-node';
 import {
-	HelmChart,
-	HelmRepository,
-	GitRepository,
-	OCIRepository
+	type HelmChart,
+	type HelmRepository,
+	type GitRepository,
+	type OCIRepository
 } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1beta2';
-import { HelmRelease } from '@kubernetes-models/flux-cd/helm.toolkit.fluxcd.io/v2beta2';
-import { Kustomization } from '@kubernetes-models/flux-cd/kustomize.toolkit.fluxcd.io/v1';
+import { type HelmRelease } from '@kubernetes-models/flux-cd/helm.toolkit.fluxcd.io/v2beta2';
+import { type Kustomization } from '@kubernetes-models/flux-cd/kustomize.toolkit.fluxcd.io/v1';
 
 export async function load({ depends }) {
 	depends('flux:resources');
