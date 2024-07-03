@@ -28,7 +28,6 @@ jobs:
       - name: Apply test manifests
         run: |
           kubectl apply -f tests/manifests/namespaces.yml --wait
-          &&
           kubectl apply -f tests/manifests
 
       - uses: actions/setup-node@v4
