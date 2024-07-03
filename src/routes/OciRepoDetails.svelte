@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { A } from 'flowbite-svelte';
 	import YamlModal from './YamlModalButton.svelte';
+	import ResourceDetails from './ResourceDetails.svelte';
 
 	export let resource: KubernetesObject;
 
@@ -17,9 +18,10 @@
 	// const updated = new Date(resource.status.artifact.lastUpdateTime).toString().split(' (')[0];
 </script>
 
-<div
+<!-- <div
 	class="relative grid grid-cols-1 justify-between rounded-md m-1 py-1 px-2 border border-slate-200"
->
+> -->
+<ResourceDetails>
 	<span class="">Namespace: {resource.metadata.namespace}</span>
 	<span class="">Name: {resource.metadata.name}</span>
 	<span>Status: <span class={statusClasses}>{status.type}</span></span>
@@ -27,4 +29,5 @@
 	<!-- <span>Revision: {resource.status.artifact.revision}</span> -->
 	<!-- <span>Updated: {updated}</span> -->
 	<YamlModal {resource} />
-</div>
+</ResourceDetails>
+<!-- </div> -->
