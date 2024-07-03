@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flux-atlas
+  labels:
+    app: flux-atlas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flux-atlas
+  template:
+    metadata:
+      labels:
+        app: flux-atlas
+    spec:
+      serviceAccountName: flux-atlas
+      containers:
+        - name: flux-atlas
+          image: flux-atlas
+          ports:
+            - containerPort: 3000
