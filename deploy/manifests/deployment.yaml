@@ -19,6 +19,6 @@ spec:
         - name: flux-atlas
           # TODO: Change this to tag latest once image
           # build workflow is running on tags only
-          image: ghcr.io/sd109/flux-atlas:master
+          image: ghcr.io/sd109/flux-atlas:main
           ports:
             - containerPort: 3000
