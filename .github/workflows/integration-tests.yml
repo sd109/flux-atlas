@@ -16,6 +16,8 @@ jobs:
       # Also installs kubectl
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1
+        with:
+          cluster_name: integration-tests
 
       - name: Setup Flux CLI
         uses: fluxcd/flux2/action@main
@@ -24,7 +26,10 @@ jobs:
         run: flux install
 
       - name: Apply test manifests
-        run: kubectl apply -f tests/manifests
+        run: |
+          kubectl apply -f tests/manifests/namespaces.yml --wait
+          &&
+          kubectl apply -f tests/manifests
 
       - uses: actions/setup-node@v4
         with:
