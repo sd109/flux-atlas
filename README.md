@@ -1,22 +1,18 @@
-# create-svelte
+# Flux Atlas
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+A comprehensive map of your cluster's Flux state.
 
-## Creating a project
+## About
 
-If you're seeing this, you've probably already done this step. Congrats!
+Flux Atlas is a simple web interface for monitoring the state of Kubernetes clusters running [Flux CD](https://fluxcd.io).
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Installation
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+First, ensure Flux CD is [installed](https://fluxcd.io/flux/installation/) on the target cluster then simply apply the resource in `deploy/flux.yml` to your cluster with `kubectl`.
 
-## Developing
+## Contributing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Once you've created a project and installed dependencies with `npm install` start a development server:
 
 ```bash
 npm run dev
@@ -25,14 +21,12 @@ npm run dev
 npm run dev -- --open
 ```
 
-## Building
+The development server will pick up your local `kubectl` context.
 
-To create a production version of your app:
+### Testing
 
-```bash
-npm run build
-```
+To test your changes, use `npm run test` - this will include both unit tests and integration tests (via playwright).
 
-You can preview the production build with `npm run preview`.
+### Tilt
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+A [tilt](https://tilt.dev) file is provided in the repo root to simplify the process of iteratively testing your changes on a live cluster.
