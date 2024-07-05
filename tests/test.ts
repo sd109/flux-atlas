@@ -11,7 +11,7 @@ test('Basic overview page functionality', async ({ page }) => {
 		'HelmRelease',
 		'Kustomization'
 	];
-	resources.map(async (h) => await expect(page.getByText(h)).toBeVisible());
+	await Promise.all(resources.map(async (h) => await expect(page.getByText(h)).toBeVisible()));
 });
 
 test('Clicking on resource displays resource yaml', async ({ page }) => {
