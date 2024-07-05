@@ -7,13 +7,26 @@ import type {
 } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1beta2';
 import { type HelmRelease } from '@kubernetes-models/flux-cd/helm.toolkit.fluxcd.io/v2beta2';
 import { type Kustomization } from '@kubernetes-models/flux-cd/kustomize.toolkit.fluxcd.io/v1';
+import { error } from '@sveltejs/kit';
 
 export async function load({ depends }) {
 	depends('flux:resources');
-	// console.debug('Fetching Flux resources');
 
 	const kc = new k8s.KubeConfig();
 	kc.loadFromDefault();
+
+	// Check context was loaded successfully
+	const cluster = kc.getCurrentCluster();
+	if (!cluster) error(404, 'Current cluster context not found');
+	console.info('Using cluster:', cluster.name);
+
+	// Check cluster is reachable
+	try {
+		const client = kc.makeApiClient(k8s.CoreV1Api);
+		await client.listNode();
+	} catch {
+		error(500, 'Kubernetes cluster unreachable');
+	}
 
 	const client = kc.makeApiClient(k8s.CustomObjectsApi);
 
