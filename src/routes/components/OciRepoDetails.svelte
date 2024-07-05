@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { A } from 'flowbite-svelte';
 	import YamlModal from './YamlModalButton.svelte';
 	import ResourceDetails from './ResourceDetails.svelte';
 	import type { OCIRepository } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1beta2';

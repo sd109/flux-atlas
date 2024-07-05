@@ -2,7 +2,6 @@
 	import { ListgroupItem, Modal } from 'flowbite-svelte';
 	import { stringify } from 'yaml';
 
-	// export let resource: KubernetesObject & { status: string };
 	export let resource: KubernetesObject;
 
 	function handleClick() {
