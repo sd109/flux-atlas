@@ -2,7 +2,6 @@
 	import YamlModalButton from './YamlModalButton.svelte';
 	import ResourceDetails from './ResourceDetails.svelte';
 	import type { HelmRelease } from '@kubernetes-models/flux-cd/helm.toolkit.fluxcd.io/v2beta2';
-	import ResourceCard from './ResourceCard.svelte';
 
 	export let resource: HelmRelease;
 

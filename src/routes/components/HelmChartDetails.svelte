@@ -3,8 +3,6 @@
 	import YamlModalButton from './YamlModalButton.svelte';
 	import ResourceDetails from './ResourceDetails.svelte';
 	import type { HelmChart } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1beta2';
-	import ResourceCard from './ResourceCard.svelte';
-	import ResourceCardListItem from './ResourceCardListItem.svelte';
 
 	export let resource: HelmChart;
 
