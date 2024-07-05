@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { HelmRelease } from '@kubernetes-models/flux-cd/helm.toolkit.fluxcd.io/v2beta2';
+	import type { Kustomization } from '@kubernetes-models/flux-cd/kustomize.toolkit.fluxcd.io/v1';
 	import type { GitRepository } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1';
 	import type {
 		HelmChart,
@@ -13,7 +14,8 @@
 		| OCIRepository
 		| HelmRepository
 		| HelmChart
-		| HelmRelease;
+		| HelmRelease
+		| Kustomization;
 
 	import { Modal } from 'flowbite-svelte';
 	import { stringify } from 'yaml';

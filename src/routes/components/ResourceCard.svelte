@@ -7,6 +7,7 @@
 	import HelmRepoDetails from './HelmRepoDetails.svelte';
 	import HelmChartDetails from './HelmChartDetails.svelte';
 	import HelmReleaseDetails from './HelmReleaseDetails.svelte';
+	import KustomizationDetails from './KustomizationDetails.svelte';
 
 	export let key: string;
 	export let items: any[];
@@ -35,6 +36,8 @@
 				<HelmChartDetails resource={r} />
 			{:else if key == 'helmreleases'}
 				<HelmReleaseDetails resource={r} />
+			{:else if key == 'kustomizations'}
+				<KustomizationDetails resource={r} />
 			{:else}
 				<p>Detailed resource view not implemented for {key}</p>
 			{/if}
