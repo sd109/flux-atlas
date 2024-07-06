@@ -23,8 +23,9 @@ export async function load({ depends }) {
 	// Check cluster is reachable
 	try {
 		const client = kc.makeApiClient(k8s.CoreV1Api);
-		await client.listNode();
-	} catch {
+		await client.listNamespace();
+	} catch (err) {
+		console.error(err);
 		error(500, 'Kubernetes cluster unreachable');
 	}
 

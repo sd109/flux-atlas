@@ -1,4 +1,4 @@
-docker_build('flux-atlas', '.', build_args={'node_env': 'development'})
+docker_build('ghcr.io/sd109/flux-atlas', '.', build_args={'node_env': 'development'})
 
 k8s_yaml(listdir('deploy/manifests'))
 
