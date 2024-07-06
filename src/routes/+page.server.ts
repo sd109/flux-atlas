@@ -18,7 +18,7 @@ export async function load({ depends }) {
 	// Check context was loaded successfully
 	const cluster = kc.getCurrentCluster();
 	if (!cluster) error(404, 'Current cluster context not found');
-	console.info('Using cluster:', cluster.name);
+	// console.debug('Using cluster:', cluster.name);
 
 	// Check cluster is reachable
 	try {
