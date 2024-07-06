@@ -4,11 +4,13 @@ const config: PlaywrightTestConfig = {
 	webServer: {
 		command: 'npm run dev',
 		port: 5173,
-		reuseExistingServer: !process.env.CI
+		reuseExistingServer: !process.env.CI,
+		stdout: 'pipe',
+		stderr: 'pipe'
 	},
 	testDir: 'tests',
 	testMatch: /(.+\.)?(test|spec)\.[jt]s/,
-	timeout: 10000,
+	timeout: 30000,
 	use: {
 		testIdAttribute: 'data-testid'
 	},

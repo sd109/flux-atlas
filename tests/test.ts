@@ -88,8 +88,9 @@ test('Create and then delete GitRepo source', async ({ page }) => {
 	await expect(page.locator('.multiline')).toBeVisible();
 
 	await page.reload();
+	await page.waitForTimeout(3000);
 	await resourceItem.getByText('Reconciling').waitFor();
-	await page.waitForTimeout(5000);
+	await page.waitForTimeout(3000);
 	await page.reload();
 	// await page.getByRole('button', { name: 'Refresh' }).click({ delay: 500 });
 	// await page.getByRole('button', { name: 'Refresh' }).waitFor();
