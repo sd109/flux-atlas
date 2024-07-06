@@ -2,21 +2,12 @@
 	import '../app.css';
 	import { Navbar, NavBrand, NavLi, NavUl, Toggle, NavHamburger, Spinner } from 'flowbite-svelte';
 
-	import { page } from '$app/stores';
-	import { goto, invalidate } from '$app/navigation';
+	import { invalidate } from '$app/navigation';
 	import { compactView } from '$lib';
 	import { onDestroy } from 'svelte';
 
-	let params = $page.url.searchParams;
-	// Set compactView value if query param present on first load
-	compactView.update(() => (params.get('compact') == 'false' ? false : true));
-
 	function handleToggle() {
-		// Toggle store value
-		compactView.update((val) => !val);
-		// Update query param to persist value on page reload
-		params.set('compact', $compactView.toString());
-		goto(`?${params}`);
+		compactView.set(!$compactView);
 	}
 
 	let refreshEnabled = true;
@@ -28,7 +19,7 @@
 	}
 
 	// Trigger auto refresh periodically
-	const id = setInterval(handleRefresh, 60000);
+	const id = setInterval(handleRefresh, 30000);
 	onDestroy(() => clearInterval(id));
 </script>
 

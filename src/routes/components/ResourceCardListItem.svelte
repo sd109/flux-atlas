@@ -18,7 +18,9 @@
 	let modalContent = '';
 
 	let label = `${resource.metadata?.namespace}/${resource.metadata?.name}`;
-	let status = resource.status.conditions[0];
+	let status = resource.status?.conditions
+		? resource.status?.conditions[0]
+		: { type: 'Unknown', status: 'unknown' };
 	let statusClasses = 'text-right';
 	if (status.type == 'Ready') {
 		statusClasses += ' ';
