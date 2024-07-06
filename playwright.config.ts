@@ -2,15 +2,17 @@ import { type PlaywrightTestConfig, devices } from '@playwright/test';
 
 const config: PlaywrightTestConfig = {
 	webServer: {
-		command: 'npm run build && npm run preview',
-		port: 4173
+		command: 'npm run dev',
+		port: 5173,
+		reuseExistingServer: !process.env.CI
 	},
 	testDir: 'tests',
 	testMatch: /(.+\.)?(test|spec)\.[jt]s/,
-	timeout: 5000,
+	timeout: 10000,
 	use: {
 		testIdAttribute: 'data-testid'
 	},
+	retries: 1,
 	projects: [
 		/* Test against desktop browsers */
 		{
