@@ -13,7 +13,7 @@
 	export let items: any[];
 
 	// Fall back to key as heading if required
-	let title = items.length > 0 ? items[0].kind : key[0].toUpperCase() + key.slice(1);
+	let title = items.length > 0 ? items[0].kind : key[0] + key.slice(1);
 </script>
 
 <Card size={$compactView ? 'xl' : 'none'} class="" id={key}>
@@ -26,17 +26,17 @@
 		{#each items as r}
 			{#if $compactView}
 				<ResourceCardListItem resource={r} />
-			{:else if key == 'gitrepos'}
+			{:else if key.toLowerCase() == 'gitrepos'}
 				<GitRepoDetails resource={r} />
-			{:else if key == 'ocirepos'}
+			{:else if key.toLowerCase() == 'ocirepos'}
 				<OciRepoDetails resource={r} />
-			{:else if key == 'helmrepos'}
+			{:else if key.toLowerCase() == 'helmrepos'}
 				<HelmRepoDetails resource={r} />
-			{:else if key == 'helmcharts'}
+			{:else if key.toLowerCase() == 'helmcharts'}
 				<HelmChartDetails resource={r} />
-			{:else if key == 'helmreleases'}
+			{:else if key.toLowerCase() == 'helmreleases'}
 				<HelmReleaseDetails resource={r} />
-			{:else if key == 'kustomizations'}
+			{:else if key.toLowerCase() == 'kustomizations'}
 				<KustomizationDetails resource={r} />
 			{:else}
 				<p>Detailed resource view not implemented for {key}</p>

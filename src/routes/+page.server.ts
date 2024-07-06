@@ -1,9 +1,9 @@
 import * as k8s from '@kubernetes/client-node';
-import type {
+import {
 	HelmChart,
-	HelmRepository,
-	GitRepository,
-	OCIRepository
+	type HelmRepository,
+	type GitRepository,
+	type OCIRepository
 } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1beta2';
 import { type HelmRelease } from '@kubernetes-models/flux-cd/helm.toolkit.fluxcd.io/v2beta2';
 import { type Kustomization } from '@kubernetes-models/flux-cd/kustomize.toolkit.fluxcd.io/v1';
@@ -31,7 +31,7 @@ export async function load({ depends }) {
 
 	const client = kc.makeApiClient(k8s.CustomObjectsApi);
 
-	const ocirepos: OCIRepository[] = (
+	const OCIRepos: OCIRepository[] = (
 		await client.listClusterCustomObject({
 			group: 'source.toolkit.fluxcd.io',
 			version: 'v1beta2',
@@ -39,7 +39,7 @@ export async function load({ depends }) {
 		})
 	).items;
 
-	const gitrepos: GitRepository[] = (
+	const GitRepos: GitRepository[] = (
 		await client.listClusterCustomObject({
 			group: 'source.toolkit.fluxcd.io',
 			version: 'v1',
@@ -47,7 +47,7 @@ export async function load({ depends }) {
 		})
 	).items;
 
-	const helmrepos: HelmRepository[] = (
+	const HelmRepos: HelmRepository[] = (
 		await client.listClusterCustomObject({
 			group: 'source.toolkit.fluxcd.io',
 			version: 'v1',
@@ -55,7 +55,7 @@ export async function load({ depends }) {
 		})
 	).items;
 
-	const helmcharts: HelmChart[] = (
+	const HelmCharts: HelmChart[] = (
 		await client.listClusterCustomObject({
 			group: 'source.toolkit.fluxcd.io',
 			version: 'v1',
@@ -63,7 +63,7 @@ export async function load({ depends }) {
 		})
 	).items;
 
-	const helmreleases: HelmRelease[] = (
+	const HelmReleases: HelmRelease[] = (
 		await client.listClusterCustomObject({
 			group: 'helm.toolkit.fluxcd.io',
 			version: 'v2',
@@ -71,7 +71,7 @@ export async function load({ depends }) {
 		})
 	).items;
 
-	const kustomizations: Kustomization[] = (
+	const Kustomizations: Kustomization[] = (
 		await client.listClusterCustomObject({
 			group: 'kustomize.toolkit.fluxcd.io',
 			version: 'v1',
@@ -80,11 +80,11 @@ export async function load({ depends }) {
 	).items;
 
 	return {
-		gitrepos,
-		ocirepos,
-		helmrepos,
-		helmcharts,
-		helmreleases,
-		kustomizations
+		GitRepos,
+		OCIRepos,
+		HelmRepos,
+		HelmCharts,
+		HelmReleases,
+		Kustomizations
 	};
 }
