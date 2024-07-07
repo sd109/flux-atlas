@@ -3,6 +3,7 @@ import * as k8s from '@kubernetes/client-node';
 import type { GitRepository } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1';
 import { parse } from 'yaml';
 import fs from 'fs';
+// import { listOciRepos } from './utils';
 
 function randomString(length: number) {
 	const characters = 'abcdefghijklmnopqrstuvwxyz';
@@ -17,14 +18,14 @@ async function setup() {
 	const kc = new k8s.KubeConfig();
 	kc.loadFromDefault();
 
-	const client = kc.makeApiClient(k8s.CoreV1Api);
+	const _client = kc.makeApiClient(k8s.CoreV1Api);
 	const ns = 'flux-atlas-test-' + randomString(6);
 	const obj = new k8s.V1Namespace();
 	obj.metadata = { name: ns };
-	await client.createNamespace({ body: obj });
+	await _client.createNamespace({ body: obj });
 
-	const fluxClient = kc.makeApiClient(k8s.CustomObjectsApi);
-	return { ns, fluxClient };
+	const client = kc.makeApiClient(k8s.CustomObjectsApi);
+	return { ns, client };
 }
 
 async function teardown(ns: string) {
@@ -62,13 +63,13 @@ test('Compact toggle alters grid layout', async ({ page }) => {
 test('Create and then delete GitRepo source', async ({ page }) => {
 	test.slow();
 
-	const { ns, fluxClient } = await setup();
+	const { ns, client } = await setup();
 
 	const file = fs.readFileSync('./tests/manifests/git-repo.yml', 'utf-8');
 	const resource: GitRepository = await parse(file);
 	resource.metadata!.namespace = ns;
 	const [group, version] = resource.apiVersion.split('/');
-	await fluxClient.createNamespacedCustomObject({
+	await client.createNamespacedCustomObject({
 		plural: 'gitrepositories',
 		group,
 		version,
@@ -92,8 +93,6 @@ test('Create and then delete GitRepo source', async ({ page }) => {
 	await resourceItem.getByText('Reconciling').waitFor();
 	await page.waitForTimeout(3000);
 	await page.reload();
-	// await page.getByRole('button', { name: 'Refresh' }).click({ delay: 500 });
-	// await page.getByRole('button', { name: 'Refresh' }).waitFor();
 	await resourceItem.getByText('Ready').waitFor();
 
 	await teardown(ns);
@@ -108,4 +107,45 @@ test('Create and then delete GitRepo source', async ({ page }) => {
 	}
 
 	await expect(page.getByText(label)).not.toBeVisible();
+});
+
+import type { OCIRepository } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1beta2';
+// import * as k8s from '@kubernetes/client-node';
+
+export async function listOciRepos(client: k8s.CustomObjectsApi): Promise<OCIRepository[]> {
+	const response = await client.listClusterCustomObject({
+		group: 'source.toolkit.fluxcd.io',
+		version: 'v1beta2',
+		plural: 'ocirepositories'
+	});
+	return response.items;
+}
+
+test('Wait for k8s resource', async ({ page }) => {
+	test.slow();
+
+	const { ns, client } = await setup();
+
+	await page.waitForFunction(
+		() => {
+			// TODO: Try waiting for k8s changes
+			// here instead of using waitForTimeout
+			console.log('Waiting for function');
+
+			// const result = await listOciRepos(client);
+
+			// const response = await client.listClusterCustomObject({
+			// 	group: 'source.toolkit.fluxcd.io',
+			// 	version: 'v1beta2',
+			// 	plural: 'ocirepositories'
+			// });
+
+			// return response.items.length > 0;
+			return false;
+		},
+		// The options seem to have no effect...
+		{ polling: 1000, timeout: 5000 }
+	);
+
+	await teardown(ns);
 });

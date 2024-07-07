@@ -1,13 +1,13 @@
 import * as k8s from '@kubernetes/client-node';
-import {
+import type {
 	HelmChart,
-	type HelmRepository,
-	type GitRepository,
-	type OCIRepository
+	HelmRepository,
+	GitRepository
 } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1beta2';
 import { type HelmRelease } from '@kubernetes-models/flux-cd/helm.toolkit.fluxcd.io/v2beta2';
 import { type Kustomization } from '@kubernetes-models/flux-cd/kustomize.toolkit.fluxcd.io/v1';
 import { error } from '@sveltejs/kit';
+import { listOciRepos } from './utils.server';
 
 export async function load({ depends }) {
 	depends('flux:resources');
@@ -31,13 +31,7 @@ export async function load({ depends }) {
 
 	const client = kc.makeApiClient(k8s.CustomObjectsApi);
 
-	const OCIRepos: OCIRepository[] = (
-		await client.listClusterCustomObject({
-			group: 'source.toolkit.fluxcd.io',
-			version: 'v1beta2',
-			plural: 'ocirepositories'
-		})
-	).items;
+	const OCIRepos = await listOciRepos(client);
 
 	const GitRepos: GitRepository[] = (
 		await client.listClusterCustomObject({
