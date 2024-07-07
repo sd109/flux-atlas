@@ -1,13 +1,14 @@
 import * as k8s from '@kubernetes/client-node';
-import type {
-	HelmChart,
-	HelmRepository,
-	GitRepository
-} from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1beta2';
-import { type HelmRelease } from '@kubernetes-models/flux-cd/helm.toolkit.fluxcd.io/v2beta2';
-import { type Kustomization } from '@kubernetes-models/flux-cd/kustomize.toolkit.fluxcd.io/v1';
 import { error } from '@sveltejs/kit';
-import { listOciRepos } from './utils.server';
+import {
+	GitRepoResourceGroup,
+	HelmChartResourceGroup,
+	HelmReleaseResourceGroup,
+	HelmRepoResourceGroup,
+	KustomizationResourceGroup,
+	listFluxResource,
+	OciRepoResourceGroup
+} from './utils.server';
 
 export async function load({ depends }) {
 	depends('flux:resources');
@@ -31,47 +32,17 @@ export async function load({ depends }) {
 
 	const client = kc.makeApiClient(k8s.CustomObjectsApi);
 
-	const OCIRepos = await listOciRepos(client);
+	const OCIRepos = await listFluxResource(client, OciRepoResourceGroup);
 
-	const GitRepos: GitRepository[] = (
-		await client.listClusterCustomObject({
-			group: 'source.toolkit.fluxcd.io',
-			version: 'v1',
-			plural: 'gitrepositories'
-		})
-	).items;
+	const GitRepos = await listFluxResource(client, GitRepoResourceGroup);
 
-	const HelmRepos: HelmRepository[] = (
-		await client.listClusterCustomObject({
-			group: 'source.toolkit.fluxcd.io',
-			version: 'v1',
-			plural: 'helmrepositories'
-		})
-	).items;
+	const HelmRepos = await listFluxResource(client, HelmRepoResourceGroup);
 
-	const HelmCharts: HelmChart[] = (
-		await client.listClusterCustomObject({
-			group: 'source.toolkit.fluxcd.io',
-			version: 'v1',
-			plural: 'helmcharts'
-		})
-	).items;
+	const HelmCharts = await listFluxResource(client, HelmChartResourceGroup);
 
-	const HelmReleases: HelmRelease[] = (
-		await client.listClusterCustomObject({
-			group: 'helm.toolkit.fluxcd.io',
-			version: 'v2',
-			plural: 'helmreleases'
-		})
-	).items;
+	const HelmReleases = await listFluxResource(client, HelmReleaseResourceGroup);
 
-	const Kustomizations: Kustomization[] = (
-		await client.listClusterCustomObject({
-			group: 'kustomize.toolkit.fluxcd.io',
-			version: 'v1',
-			plural: 'kustomizations'
-		})
-	).items;
+	const Kustomizations = await listFluxResource(client, KustomizationResourceGroup);
 
 	return {
 		GitRepos,
