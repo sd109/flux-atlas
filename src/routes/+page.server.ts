@@ -8,7 +8,7 @@ import {
 	KustomizationResourceGroup,
 	listFluxResource,
 	OciRepoResourceGroup
-} from './utils.server';
+} from '$lib/server';
 
 export async function load({ depends }) {
 	depends('flux:resources');
@@ -26,7 +26,7 @@ export async function load({ depends }) {
 		const client = kc.makeApiClient(k8s.CoreV1Api);
 		await client.listNamespace();
 	} catch (err) {
-		console.error(err);
+		// console.error(err);
 		error(500, 'Kubernetes cluster unreachable');
 	}
 
