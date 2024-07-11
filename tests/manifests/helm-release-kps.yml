@@ -14,4 +14,3 @@ spec:
         name: prometheus-community
         namespace: monitoring
       interval: 60m
-  # values:
