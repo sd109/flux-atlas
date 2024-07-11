@@ -21,7 +21,17 @@
 	// Trigger auto refresh periodically
 	const id = setInterval(handleRefresh, 30000);
 	onDestroy(() => clearInterval(id));
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.metaKey && event.key == 'k') {
+			// TODO: Make this work on non-MacOS keyboards
+			// i.e. those which don't have a command key
+			console.log(`Key pressed: cmd + ${event.key}`);
+		}
+	}
 </script>
+
+<svelte:document on:keydown={handleKeydown} />
 
 <Navbar class="bg-black" fluid>
 	<NavBrand>
