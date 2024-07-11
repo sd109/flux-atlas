@@ -2,12 +2,19 @@
 	import '../app.css';
 	import { Navbar, NavBrand, NavLi, NavUl, Toggle, NavHamburger, Spinner } from 'flowbite-svelte';
 
-	import { invalidate } from '$app/navigation';
-	import { compactView } from '$lib';
-	import { onDestroy } from 'svelte';
+	import { goto, invalidate } from '$app/navigation';
+	import { compactToggle, isCompact } from '$lib';
+	import { beforeUpdate, onDestroy, onMount } from 'svelte';
+	import { page } from '$app/stores';
 
-	function handleToggle() {
-		compactView.set(!$compactView);
+	// If query param is provided then set compact state appropriately
+	beforeUpdate(() => {
+		compactToggle.set(isCompact($page.url, $compactToggle));
+	});
+
+	async function handleToggle() {
+		compactToggle.set(!$compactToggle);
+		await goto(`?compact=${$compactToggle}`);
 	}
 
 	let refreshEnabled = true;
@@ -61,7 +68,11 @@
 		</button>
 
 		<NavLi>
-			<Toggle class="md:text-white" checked={$compactView} on:change={handleToggle}>
+			<Toggle
+				class="md:text-white"
+				checked={isCompact($page.url, $compactToggle)}
+				on:change={handleToggle}
+			>
 				Compact View
 			</Toggle>
 		</NavLi>

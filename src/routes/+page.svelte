@@ -1,10 +1,13 @@
 <script lang="ts">
 	import ResourceCard from './components/ResourceCard.svelte';
-	import { compactView } from '$lib';
+	import { compactToggle, isCompact } from '$lib';
+	import { page } from '$app/stores';
 
 	export let data;
 
-	$: layoutClasses = !$compactView ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 2xl:grid-cols-3';
+	$: layoutClasses = !isCompact($page.url, $compactToggle)
+		? 'grid-cols-1'
+		: 'grid-cols-1 md:grid-cols-2 2xl:grid-cols-3';
 </script>
 
 <div data-testid="resources" class={`grid ${layoutClasses} gap-4 m-4`}>
