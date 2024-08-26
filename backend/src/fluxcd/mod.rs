@@ -2,26 +2,22 @@ mod helm_release;
 mod kustomization;
 
 pub use helm_release::HelmReleaseView;
-use k8s_openapi::Resource;
-use kube::Client;
 pub use kustomization::KustomizationView;
 
-// use std::fmt::Debug;
-// use k8s_openapi::{Metadata, Resource};
-// use kube::{api::ListParams, Api, Client};
-// use rocket::serde::DeserializeOwned;
+use kube::{
+    api::{Api, ListParams},
+    Client, Resource,
+};
+use rocket::serde::DeserializeOwned;
+use std::fmt::Debug;
 
-// trait Fetch: Sized {
-//     type ApiType: Resource + Metadata + Clone + Debug + DeserializeOwned;
-
-//     async fn fetch(client: &Client) -> Vec<Self> {
-//         Api::all(client.to_owned())
-//             .list(&ListParams::default())
-//             .await
-//             .unwrap()
-//             .items
-//             .into_iter()
-//             .map(|item: Self::ApiType| Self::from(item))
-//             .collect()
-//     }
-// }
+async fn list_resources<K: Resource + Debug + DeserializeOwned + Clone>(client: &Client) -> Vec<K>
+where
+    <K as Resource>::DynamicType: Default,
+{
+    Api::<K>::all(client.to_owned())
+        .list(&ListParams::default())
+        .await
+        .unwrap() // TODO: Handle errors here
+        .items
+}

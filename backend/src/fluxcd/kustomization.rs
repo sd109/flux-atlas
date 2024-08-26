@@ -1,6 +1,8 @@
-use kube::{api::ListParams, Api, Client};
+use kube::Client;
 use kube_custom_resources_rs::kustomize_toolkit_fluxcd_io::v1::kustomizations::Kustomization;
 use rocket::serde::Serialize;
+
+use super::list_resources;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
@@ -23,11 +25,8 @@ impl From<Kustomization> for KustomizationView {
 
 impl KustomizationView {
     pub async fn fetch(client: &Client) -> Vec<KustomizationView> {
-        Api::all(client.to_owned())
-            .list(&ListParams::default())
+        list_resources(client)
             .await
-            .unwrap()
-            .items
             .into_iter()
             .map(|k: Kustomization| KustomizationView::from(k))
             .collect()

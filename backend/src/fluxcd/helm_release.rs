@@ -1,6 +1,8 @@
-use kube::{api::ListParams, Api, Client};
+use kube::Client;
 use kube_custom_resources_rs::helm_toolkit_fluxcd_io::v2::helmreleases::HelmRelease;
 use rocket::serde::Serialize;
+
+use super::list_resources;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
@@ -25,11 +27,8 @@ impl From<HelmRelease> for HelmReleaseView {
 
 impl HelmReleaseView {
     pub async fn fetch(client: &Client) -> Vec<HelmReleaseView> {
-        Api::all(client.to_owned())
-            .list(&ListParams::default())
+        list_resources(client)
             .await
-            .unwrap()
-            .items
             .into_iter()
             .map(|hr: HelmRelease| HelmReleaseView::from(hr))
             .collect()
