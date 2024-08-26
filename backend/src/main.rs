@@ -1,40 +1,57 @@
 #[macro_use]
 extern crate rocket;
-use k8s_openapi::api::core::v1::Pod;
-use kube::{
-    api::{Api, ListParams, ResourceExt},
-    Client,
-};
-use rocket::serde::{json::Json, Serialize};
 
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-struct Test {
-    hello: String,
+use kube::Client;
+use rocket::{futures::io::Cursor, http::Header, response, serde::json::Json, Response, State};
+
+mod fluxcd;
+use fluxcd::{HelmReleaseView, KustomizationView};
+
+#[derive(Responder)]
+#[response(content_type = "json")]
+struct CustomResponder<T> {
+    inner: Json<T>,
+    cors: Header<'static>,
 }
 
-async fn fetch() {
-    // Infer the runtime environment and try to create a Kubernetes Client
-    let client = Client::try_default().await.unwrap();
+// NOTE: VSCode highlights a macro-error here when state is incldued
+// which seems to be a bug / red-herring and can be ignored.
+// #[get("/helmreleases")]
+// async fn helm_releases(client: &State<Client>) -> Json<Vec<HelmReleaseView>> {
+//     Json(HelmReleaseView::fetch(client).await)
+// }
 
-    // Read pods in the configured namespace into the typed interface from k8s-openapi
-    let pods: Api<Pod> = Api::default_namespaced(client);
-    for p in pods.list(&ListParams::default()).await.unwrap() {
-        println!("found pod {}", p.name_any());
+#[get("/helmreleases")]
+async fn helm_releases(client: &State<Client>) -> CustomResponder<Vec<HelmReleaseView>> {
+    CustomResponder {
+        inner: Json(HelmReleaseView::fetch(client).await),
+        cors: Header::new("Access-Control-Allow-Origin", "*"),
     }
 }
 
-#[get("/")]
-async fn index() -> Json<Test> {
-    fetch().await;
+// #[get("/helmreleases")]
+// async fn helm_releases(client: &State<Client>) -> Response {
+//     let json =
+//         rocket::serde::json::serde_json::to_string(&HelmReleaseView::fetch(client).await).unwrap();
+//     Response::build()
+//         .raw_header("Access-Control-Allow-Origin", "*")
+//         .sized_body(json.len(), Cursor::new(json))
+//         .finalize()
+// }
 
-    // "Hello, world!"
-    return Json(Test {
-        hello: "World".to_string(),
-    });
+#[get("/kustomizations")]
+async fn kustomizations(client: &State<Client>) -> Json<Vec<KustomizationView>> {
+    Json(KustomizationView::fetch(client).await)
 }
 
 #[launch]
-fn rocket() -> _ {
-    rocket::build().mount("/api/", routes![index])
+async fn rocket() -> _ {
+    // Infer the runtime environment and try to create a Kubernetes Client
+    let client = Client::try_default()
+        .await
+        .expect("Kubernetes client to be inferrable from runtime environment");
+
+    rocket::build()
+        .manage(client)
+        .mount("/api/", routes![helm_releases, kustomizations])
 }
