@@ -1,15 +1,12 @@
 <script lang="ts">
-	import { ListgroupItem, Modal } from 'flowbite-svelte';
+	import { Modal } from 'flowbite-svelte';
 	import { stringify } from 'yaml';
 
-	export let resource: KubernetesObject;
+	export let resource: ResourceView;
 
 	function handleClick() {
 		modalVisible = true;
-		modalTitle = `Namespace: ${resource.metadata?.namespace} Name: ${resource.metadata?.name}`;
-		if (resource.metadata?.managedFields) {
-			delete resource.metadata?.managedFields;
-		}
+		modalTitle = `Namespace: ${resource.namespace} Name: ${resource.name}`;
 		modalContent = stringify(resource);
 	}
 
@@ -17,15 +14,14 @@
 	let modalTitle = '';
 	let modalContent = '';
 
-	let label = `${resource.metadata?.namespace}/${resource.metadata?.name}`;
-	let status = resource.status?.conditions
-		? resource.status?.conditions[0]
-		: { type: 'Unknown', status: 'unknown' };
+	let label = `${resource.namespace}/${resource.name}`;
 	let statusClasses = 'text-right';
-	if (status.type == 'Ready') {
-		statusClasses += ' ';
-		statusClasses += status.status.toLowerCase() == 'true' ? 'text-green-400' : 'text-red-400';
-	} else if (status.type == 'Reconciling') {
+	if (resource.status == 'Ready') {
+		// TODO: Re-implement status condition true/false in API layer
+		// statusClasses += ' ';
+		// statusClasses += resource.status.toLowerCase() == 'true' ? 'text-green-400' : 'text-red-400';
+		statusClasses += ' text-green-400';
+	} else if (resource.status == 'Reconciling') {
 		statusClasses += ' text-orange-500';
 	}
 </script>
@@ -35,7 +31,7 @@
 	on:click={handleClick}
 >
 	<span class="text-left col-span-4">{label}</span>
-	<span class={statusClasses}>{status.type}</span>
+	<span class={statusClasses}>{resource.status}</span>
 </button>
 
 <Modal title={modalTitle} size="lg" bind:open={modalVisible} outsideclose>

@@ -43,9 +43,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@kubernetes-models/flux-cd": "^2.3.0",
-		"@kubernetes/client-node": "^1.0.0-rc6",
-		"kubernetes-models": "^4.4.0",
 		"yaml": "^2.4.5"
 	}
 }

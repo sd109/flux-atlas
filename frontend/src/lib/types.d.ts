@@ -1,11 +1,32 @@
-interface KubernetesObjectMetadata {
+interface ResourceView {
 	name: string;
 	namespace: string;
-	managedFields: any;
+	status: string;
 }
 
-interface KubernetesObject {
-	metadata: KubernetesObjectMetadata;
-	spec: any;
-	status: any;
+interface VersionRef {
+	type: string;
+	version: string;
+}
+
+interface HelmReleaseView extends ResourceView {
+	chart: string;
+}
+
+interface KustomizationView extends ResourceView {
+	source: string;
+}
+
+interface HelmRepoView extends ResourceView {
+	url: string;
+}
+
+interface GitRepoView extends ResourceView {
+	url: string;
+	version: VersionRef;
+}
+
+interface OCIRepoView extends ResourceView {
+	url: string;
+	version: VersionRef;
 }

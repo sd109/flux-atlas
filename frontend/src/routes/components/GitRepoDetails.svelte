@@ -1,16 +1,13 @@
 <script lang="ts">
 	import { A } from 'flowbite-svelte';
 	import YamlModalButton from './YamlModalButton.svelte';
-	import type { GitRepository } from '@kubernetes-models/flux-cd/source.toolkit.fluxcd.io/v1';
 	import ResourceDetails from './ResourceDetails.svelte';
 
-	export let resource: GitRepository;
+	export let resource: GitRepoView;
 
-	let status = resource.status?.conditions
-		? resource.status?.conditions[0]
-		: { type: 'Unknown', status: 'unknown' };
+	let status = resource.status;
 	let statusClasses = '';
-	if (status.type == 'Ready') {
+	if (status == 'Ready') {
 		statusClasses += ' ';
 		statusClasses += status.status.toLowerCase() == 'true' ? 'text-green-400' : 'text-red-400';
 	} else if (status.type == 'Reconciling') {
