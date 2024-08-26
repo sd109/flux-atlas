@@ -10,9 +10,8 @@ async fn list_resources<K: Resource + Debug + DeserializeOwned + Clone>(client: 
 where
     <K as Resource>::DynamicType: Default,
 {
-    // NOTE: It looks like client clones are cheap, so using
-    // to_owned here is fine
-    // https://github.com/kube-rs/kube/blob/7ff120a1cad8797b098919eada1485573ea722c5/kube-client/src/client/mod.rs#L76-L81
+    // NOTE: It looks like client clones are cheap, so using to_owned here is fine
+    // https://github.com/kube-rs/kube/blob/0.93.1/kube-client/src/client/mod.rs#L76-L81
     Api::<K>::all(client.to_owned())
         .list(&ListParams::default())
         .await

@@ -10,6 +10,7 @@ pub struct HelmRepoView {
     namespace: String,
     url: String,
     status: String,
+    suspended: bool,
 }
 
 impl From<HelmRepository> for HelmRepoView {
@@ -22,6 +23,7 @@ impl From<HelmRepository> for HelmRepoView {
                 Some(status) => latest_status(status.conditions),
                 None => String::new(),
             },
+            suspended: hr.spec.suspend.unwrap_or(false),
         }
     }
 }

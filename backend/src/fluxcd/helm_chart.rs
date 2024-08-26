@@ -8,9 +8,11 @@ use super::utils::latest_status;
 pub struct HelmChartView {
     name: String,
     namespace: String,
-    chart: String,
     repo: String,
+    chart: String,
+    version: String,
     status: String,
+    suspended: bool,
 }
 
 impl From<HelmChart> for HelmChartView {
@@ -18,12 +20,14 @@ impl From<HelmChart> for HelmChartView {
         HelmChartView {
             name: hc.metadata.name.unwrap_or_default(),
             namespace: hc.metadata.namespace.unwrap_or_default(),
-            chart: hc.spec.chart,
             repo: hc.spec.source_ref.name,
+            chart: hc.spec.chart,
+            version: hc.spec.version.unwrap_or("*".to_owned()),
             status: match hc.status {
                 Some(status) => latest_status(status.conditions),
                 None => String::new(),
             },
+            suspended: hc.spec.suspend.unwrap_or(false),
         }
     }
 }

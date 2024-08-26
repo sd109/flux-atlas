@@ -10,6 +10,7 @@ pub struct KustomizationView {
     namespace: String,
     source: String,
     status: String,
+    suspended: bool,
 }
 
 impl From<Kustomization> for KustomizationView {
@@ -23,6 +24,7 @@ impl From<Kustomization> for KustomizationView {
                 Some(status) => latest_status(status.conditions),
                 None => String::new(),
             },
+            suspended: k.spec.suspend.unwrap_or(false),
         }
     }
 }

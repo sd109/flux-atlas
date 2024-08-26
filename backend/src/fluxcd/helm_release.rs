@@ -10,6 +10,7 @@ pub struct HelmReleaseView {
     namespace: String,
     chart_ref: String,
     status: String,
+    suspended: bool,
 }
 
 impl From<HelmRelease> for HelmReleaseView {
@@ -25,6 +26,7 @@ impl From<HelmRelease> for HelmReleaseView {
                 Some(status) => latest_status(status.conditions),
                 None => String::new(),
             },
+            suspended: hr.spec.suspend.unwrap_or(false),
         }
     }
 }
