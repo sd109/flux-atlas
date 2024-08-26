@@ -5,12 +5,20 @@ use kube::Client;
 use kube_custom_resources_rs::{
     helm_toolkit_fluxcd_io::v2::helmreleases::HelmRelease,
     kustomize_toolkit_fluxcd_io::v1::kustomizations::Kustomization,
-    source_toolkit_fluxcd_io::v1::{helmcharts::HelmChart, helmrepositories::HelmRepository},
+    source_toolkit_fluxcd_io::{
+        v1::{
+            gitrepositories::GitRepository, helmcharts::HelmChart, helmrepositories::HelmRepository,
+        },
+        v1beta2::ocirepositories::OCIRepository,
+    },
 };
 use rocket::{http::Header, serde::json::Json, State};
 
 mod fluxcd;
-use fluxcd::{fetch_view, HelmChartView, HelmReleaseView, HelmRepoView, KustomizationView};
+use fluxcd::{
+    fetch_view, GitRepoView, HelmChartView, HelmReleaseView, HelmRepoView, KustomizationView,
+    OCIRepoView,
+};
 
 #[derive(Responder)]
 #[response(content_type = "json")]
@@ -62,6 +70,22 @@ async fn kustomizations(client: &State<Client>) -> CorsResponder<Vec<Kustomizati
     )
 }
 
+#[get("/gitrepositories")]
+async fn git_repos(client: &State<Client>) -> CorsResponder<Vec<GitRepoView>> {
+    CorsResponder::new(
+        Json(fetch_view::<GitRepository, GitRepoView>(client).await),
+        "*",
+    )
+}
+
+#[get("/ocirepositories")]
+async fn oci_repos(client: &State<Client>) -> CorsResponder<Vec<OCIRepoView>> {
+    CorsResponder::new(
+        Json(fetch_view::<OCIRepository, OCIRepoView>(client).await),
+        "*",
+    )
+}
+
 #[launch]
 async fn rocket() -> _ {
     // Infer the runtime environment and try to create a Kubernetes Client
@@ -71,6 +95,13 @@ async fn rocket() -> _ {
 
     rocket::build().manage(client).mount(
         "/api/",
-        routes![helm_repos, helm_charts, helm_releases, kustomizations],
+        routes![
+            helm_repos,
+            helm_charts,
+            helm_releases,
+            kustomizations,
+            git_repos,
+            oci_repos
+        ],
     )
 }
