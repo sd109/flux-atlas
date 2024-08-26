@@ -1,23 +1,11 @@
+mod helm_chart;
 mod helm_release;
+mod helm_repo;
 mod kustomization;
+mod utils;
 
+pub use helm_chart::HelmChartView;
 pub use helm_release::HelmReleaseView;
+pub use helm_repo::HelmRepoView;
 pub use kustomization::KustomizationView;
-
-use kube::{
-    api::{Api, ListParams},
-    Client, Resource,
-};
-use rocket::serde::DeserializeOwned;
-use std::fmt::Debug;
-
-async fn list_resources<K: Resource + Debug + DeserializeOwned + Clone>(client: &Client) -> Vec<K>
-where
-    <K as Resource>::DynamicType: Default,
-{
-    Api::<K>::all(client.to_owned())
-        .list(&ListParams::default())
-        .await
-        .unwrap() // TODO: Handle errors here
-        .items
-}
+pub use utils::fetch_view;

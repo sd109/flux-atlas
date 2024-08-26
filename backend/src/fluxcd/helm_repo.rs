@@ -1,26 +1,23 @@
-use kube_custom_resources_rs::helm_toolkit_fluxcd_io::v2::helmreleases::HelmRelease;
+use kube_custom_resources_rs::source_toolkit_fluxcd_io::v1::helmrepositories::HelmRepository;
 use rocket::serde::Serialize;
 
 use super::utils::latest_status;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
-pub struct HelmReleaseView {
+pub struct HelmRepoView {
     name: String,
     namespace: String,
-    chart_ref: String,
+    url: String,
     status: String,
 }
 
-impl From<HelmRelease> for HelmReleaseView {
-    fn from(hr: HelmRelease) -> Self {
-        HelmReleaseView {
+impl From<HelmRepository> for HelmRepoView {
+    fn from(hr: HelmRepository) -> Self {
+        HelmRepoView {
             name: hr.metadata.name.unwrap_or_default(),
             namespace: hr.metadata.namespace.unwrap_or_default(),
-            chart_ref: match hr.spec.chart_ref {
-                Some(chart_ref) => chart_ref.name,
-                None => String::new(),
-            },
+            url: hr.spec.url,
             status: match hr.status {
                 Some(status) => latest_status(status.conditions),
                 None => String::new(),

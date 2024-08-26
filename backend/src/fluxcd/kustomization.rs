@@ -1,8 +1,7 @@
-use kube::Client;
 use kube_custom_resources_rs::kustomize_toolkit_fluxcd_io::v1::kustomizations::Kustomization;
 use rocket::serde::Serialize;
 
-use super::list_resources;
+use super::utils::latest_status;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
@@ -10,6 +9,7 @@ pub struct KustomizationView {
     name: String,
     namespace: String,
     source: String,
+    status: String,
 }
 
 impl From<Kustomization> for KustomizationView {
@@ -19,16 +19,10 @@ impl From<Kustomization> for KustomizationView {
             name: k.metadata.name.unwrap_or_default(),
             namespace: k.metadata.namespace.unwrap_or_default(),
             source: k.spec.source_ref.name,
+            status: match k.status {
+                Some(status) => latest_status(status.conditions),
+                None => String::new(),
+            },
         }
-    }
-}
-
-impl KustomizationView {
-    pub async fn fetch(client: &Client) -> Vec<KustomizationView> {
-        list_resources(client)
-            .await
-            .into_iter()
-            .map(|k: Kustomization| KustomizationView::from(k))
-            .collect()
     }
 }

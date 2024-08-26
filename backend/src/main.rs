@@ -2,10 +2,15 @@
 extern crate rocket;
 
 use kube::Client;
+use kube_custom_resources_rs::{
+    helm_toolkit_fluxcd_io::v2::helmreleases::HelmRelease,
+    kustomize_toolkit_fluxcd_io::v1::kustomizations::Kustomization,
+    source_toolkit_fluxcd_io::v1::{helmcharts::HelmChart, helmrepositories::HelmRepository},
+};
 use rocket::{http::Header, serde::json::Json, State};
 
 mod fluxcd;
-use fluxcd::{HelmReleaseView, KustomizationView};
+use fluxcd::{fetch_view, HelmChartView, HelmReleaseView, HelmRepoView, KustomizationView};
 
 #[derive(Responder)]
 #[response(content_type = "json")]
@@ -25,14 +30,36 @@ impl<T> CorsResponder<T> {
 
 // NOTE: VSCode highlights a macro-error here when state is incldued
 // which seems to be a bug / red-herring and can be ignored.
+#[get("/helmrepositories")]
+async fn helm_releases(client: &State<Client>) -> CorsResponder<Vec<HelmRepoView>> {
+    CorsResponder::new(
+        Json(fetch_view::<HelmRepository, HelmRepoView>(client).await),
+        "*",
+    )
+}
+
+#[get("/helmcharts")]
+async fn helm_charts(client: &State<Client>) -> CorsResponder<Vec<HelmChartView>> {
+    CorsResponder::new(
+        Json(fetch_view::<HelmChart, HelmChartView>(client).await),
+        "*",
+    )
+}
+
 #[get("/helmreleases")]
-async fn helm_releases(client: &State<Client>) -> CorsResponder<Vec<HelmReleaseView>> {
-    CorsResponder::new(Json(HelmReleaseView::fetch(client).await), "*")
+async fn helm_repos(client: &State<Client>) -> CorsResponder<Vec<HelmReleaseView>> {
+    CorsResponder::new(
+        Json(fetch_view::<HelmRelease, HelmReleaseView>(client).await),
+        "*",
+    )
 }
 
 #[get("/kustomizations")]
 async fn kustomizations(client: &State<Client>) -> CorsResponder<Vec<KustomizationView>> {
-    CorsResponder::new(Json(KustomizationView::fetch(client).await), "*")
+    CorsResponder::new(
+        Json(fetch_view::<Kustomization, KustomizationView>(client).await),
+        "*",
+    )
 }
 
 #[launch]
@@ -42,7 +69,8 @@ async fn rocket() -> _ {
         .await
         .expect("Kubernetes client to be inferrable from runtime environment");
 
-    rocket::build()
-        .manage(client)
-        .mount("/api/", routes![helm_releases, kustomizations])
+    rocket::build().manage(client).mount(
+        "/api/",
+        routes![helm_repos, helm_charts, helm_releases, kustomizations],
+    )
 }
