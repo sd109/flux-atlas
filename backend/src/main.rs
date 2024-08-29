@@ -36,17 +36,31 @@ impl<T> CorsResponder<T> {
     }
 }
 
-// NOTE: VSCode highlights a macro-error here when state is incldued
-// which seems to be a bug / red-herring and can be ignored.
-#[get("/helmrepositories")]
-async fn helm_releases(client: &State<Client>) -> CorsResponder<Vec<HelmRepoView>> {
+#[get("/git-repos")]
+async fn git_repos(client: &State<Client>) -> CorsResponder<Vec<GitRepoView>> {
+    CorsResponder::new(
+        Json(fetch_view::<GitRepository, GitRepoView>(client).await),
+        "*",
+    )
+}
+
+#[get("/oci-repos")]
+async fn oci_repos(client: &State<Client>) -> CorsResponder<Vec<OCIRepoView>> {
+    CorsResponder::new(
+        Json(fetch_view::<OCIRepository, OCIRepoView>(client).await),
+        "*",
+    )
+}
+
+#[get("/helm-repos")]
+async fn helm_repos(client: &State<Client>) -> CorsResponder<Vec<HelmRepoView>> {
     CorsResponder::new(
         Json(fetch_view::<HelmRepository, HelmRepoView>(client).await),
         "*",
     )
 }
 
-#[get("/helmcharts")]
+#[get("/helm-charts")]
 async fn helm_charts(client: &State<Client>) -> CorsResponder<Vec<HelmChartView>> {
     CorsResponder::new(
         Json(fetch_view::<HelmChart, HelmChartView>(client).await),
@@ -54,8 +68,8 @@ async fn helm_charts(client: &State<Client>) -> CorsResponder<Vec<HelmChartView>
     )
 }
 
-#[get("/helmreleases")]
-async fn helm_repos(client: &State<Client>) -> CorsResponder<Vec<HelmReleaseView>> {
+#[get("/helm-releases")]
+async fn helm_releases(client: &State<Client>) -> CorsResponder<Vec<HelmReleaseView>> {
     CorsResponder::new(
         Json(fetch_view::<HelmRelease, HelmReleaseView>(client).await),
         "*",
@@ -66,22 +80,6 @@ async fn helm_repos(client: &State<Client>) -> CorsResponder<Vec<HelmReleaseView
 async fn kustomizations(client: &State<Client>) -> CorsResponder<Vec<KustomizationView>> {
     CorsResponder::new(
         Json(fetch_view::<Kustomization, KustomizationView>(client).await),
-        "*",
-    )
-}
-
-#[get("/gitrepositories")]
-async fn git_repos(client: &State<Client>) -> CorsResponder<Vec<GitRepoView>> {
-    CorsResponder::new(
-        Json(fetch_view::<GitRepository, GitRepoView>(client).await),
-        "*",
-    )
-}
-
-#[get("/ocirepositories")]
-async fn oci_repos(client: &State<Client>) -> CorsResponder<Vec<OCIRepoView>> {
-    CorsResponder::new(
-        Json(fetch_view::<OCIRepository, OCIRepoView>(client).await),
         "*",
     )
 }
