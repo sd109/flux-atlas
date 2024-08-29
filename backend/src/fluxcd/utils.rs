@@ -1,4 +1,3 @@
-use k8s_openapi::apimachinery::pkg::apis::meta::v1::Condition;
 use kube::{
     api::{Api, ListParams},
     Client, Resource,
@@ -31,14 +30,4 @@ where
         .into_iter()
         .map(|hr: K| V::from(hr))
         .collect()
-}
-
-pub fn latest_status(status_conditions: Option<Vec<Condition>>) -> String {
-    match status_conditions {
-        Some(conditions) => match conditions.first() {
-            Some(item) => item.type_.to_owned(),
-            None => String::new(),
-        },
-        None => String::new(),
-    }
 }

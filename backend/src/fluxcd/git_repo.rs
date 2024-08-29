@@ -1,9 +1,39 @@
+use k8s_openapi::apimachinery::pkg::apis::meta::v1::Condition;
 use kube_custom_resources_rs::source_toolkit_fluxcd_io::v1::gitrepositories::{
     GitRepository, GitRepositoryRef,
 };
 use rocket::serde::Serialize;
 
-use super::utils::latest_status;
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct GitRepoView {
+    name: String,
+    namespace: String,
+    source: String,
+    target_ref: VersionRef,
+    conditions: Vec<Condition>,
+    interval: String,
+    suspended: bool,
+}
+
+impl From<GitRepository> for GitRepoView {
+    fn from(gr: GitRepository) -> Self {
+        GitRepoView {
+            name: gr.metadata.name.unwrap_or_default(),
+            namespace: gr.metadata.namespace.unwrap_or_default(),
+            source: gr.spec.url,
+            conditions: match gr.status {
+                Some(status) => status.conditions.unwrap_or(vec![]),
+                None => vec![],
+            },
+            target_ref: gr.spec.r#ref.into(),
+            interval: gr.spec.interval,
+            suspended: gr.spec.suspend.unwrap_or(false),
+        }
+    }
+}
+
+// Utility types
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde", tag = "type", rename_all = "lowercase")]
@@ -42,35 +72,6 @@ impl From<Option<GitRepositoryRef>> for VersionRef {
                 }
             }
             None => Self::default(),
-        }
-    }
-}
-
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-pub struct GitRepoView {
-    name: String,
-    namespace: String,
-    source: String,
-    status: String,
-    target_ref: VersionRef,
-    interval: String,
-    suspended: bool,
-}
-
-impl From<GitRepository> for GitRepoView {
-    fn from(gr: GitRepository) -> Self {
-        GitRepoView {
-            name: gr.metadata.name.unwrap_or_default(),
-            namespace: gr.metadata.namespace.unwrap_or_default(),
-            source: gr.spec.url,
-            status: match gr.status {
-                Some(status) => latest_status(status.conditions),
-                None => String::new(),
-            },
-            target_ref: gr.spec.r#ref.into(),
-            interval: gr.spec.interval,
-            suspended: gr.spec.suspend.unwrap_or(false),
         }
     }
 }

@@ -1,7 +1,6 @@
+use k8s_openapi::apimachinery::pkg::apis::meta::v1::Condition;
 use kube_custom_resources_rs::source_toolkit_fluxcd_io::v1::helmcharts::HelmChart;
 use rocket::serde::Serialize;
-
-use super::utils::latest_status;
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
@@ -11,7 +10,7 @@ pub struct HelmChartView {
     repo: String,
     chart: String,
     version: String,
-    status: String,
+    conditions: Vec<Condition>,
     suspended: bool,
 }
 
@@ -23,9 +22,9 @@ impl From<HelmChart> for HelmChartView {
             repo: hc.spec.source_ref.name,
             chart: hc.spec.chart,
             version: hc.spec.version.unwrap_or("*".to_owned()),
-            status: match hc.status {
-                Some(status) => latest_status(status.conditions),
-                None => String::new(),
+            conditions: match hc.status {
+                Some(status) => status.conditions.unwrap_or_default(),
+                None => vec![],
             },
             suspended: hc.spec.suspend.unwrap_or(false),
         }

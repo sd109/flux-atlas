@@ -1,9 +1,39 @@
+use k8s_openapi::apimachinery::pkg::apis::meta::v1::Condition;
 use kube_custom_resources_rs::source_toolkit_fluxcd_io::v1beta2::ocirepositories::{
     OCIRepository, OCIRepositoryRef,
 };
 use rocket::serde::Serialize;
 
-use super::utils::latest_status;
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct OCIRepoView {
+    name: String,
+    namespace: String,
+    source: String,
+    conditions: Vec<Condition>,
+    target_ref: VersionRef,
+    interval: String,
+    suspended: bool,
+}
+
+impl From<OCIRepository> for OCIRepoView {
+    fn from(repo: OCIRepository) -> Self {
+        OCIRepoView {
+            name: repo.metadata.name.unwrap_or_default(),
+            namespace: repo.metadata.namespace.unwrap_or_default(),
+            source: repo.spec.url,
+            conditions: match repo.status {
+                Some(status) => status.conditions.unwrap_or_default(),
+                None => vec![],
+            },
+            target_ref: repo.spec.r#ref.into(),
+            interval: repo.spec.interval,
+            suspended: repo.spec.suspend.unwrap_or(false),
+        }
+    }
+}
+
+// Utility types
 
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde", tag = "type", rename_all = "lowercase")]
@@ -36,35 +66,6 @@ impl From<Option<OCIRepositoryRef>> for VersionRef {
                 }
             }
             None => Self::default(),
-        }
-    }
-}
-
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-pub struct OCIRepoView {
-    name: String,
-    namespace: String,
-    source: String,
-    status: String,
-    target_ref: VersionRef,
-    interval: String,
-    suspended: bool,
-}
-
-impl From<OCIRepository> for OCIRepoView {
-    fn from(repo: OCIRepository) -> Self {
-        OCIRepoView {
-            name: repo.metadata.name.unwrap_or_default(),
-            namespace: repo.metadata.namespace.unwrap_or_default(),
-            source: repo.spec.url,
-            status: match repo.status {
-                Some(status) => latest_status(status.conditions),
-                None => String::new(),
-            },
-            target_ref: repo.spec.r#ref.into(),
-            interval: repo.spec.interval,
-            suspended: repo.spec.suspend.unwrap_or(false),
         }
     }
 }
