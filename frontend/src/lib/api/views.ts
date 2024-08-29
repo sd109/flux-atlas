@@ -9,6 +9,7 @@ interface ResourceView {
 	namespace: string;
 	suspended: boolean;
 	interval: string;
+	conditions: SourceCondition[] | HelmReleaseCondition[] | KustomizationCondition[];
 }
 
 interface VersionRef {

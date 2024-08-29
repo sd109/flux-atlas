@@ -1,12 +1,21 @@
-export async function load({ fetch }) {
+export async function load({ fetch, depends }) {
+	depends('flux:resources');
 	const baseUrl = 'http://localhost:8000/api/';
 	const fetch_view = async (resource: string) => (await fetch(new URL(resource, baseUrl))).json();
+
+	const GitRepos: GitRepoView[] = await fetch_view('gitrepositories');
+	const OCIRepos: OCIRepoView[] = await fetch_view('ocirepositories');
+	const HelmRepos: HelmRepoView[] = await fetch_view('helmrepositories');
+	const HelmCharts: HelmChartView[] = await fetch_view('helmcharts');
+	const HelmReleases: HelmReleaseView[] = await fetch_view('helmreleases');
+	const Kustomizations: KustomizationView[] = await fetch_view('kustomizations');
+
 	return {
-		HelmRepos: await fetch_view('helmrepositories'),
-		HelmCharts: await fetch_view('helmcharts'),
-		HelmReleases: await fetch_view('helmreleases'),
-		Kustomizations: await fetch_view('kustomizations'),
-		GitRepos: await fetch_view('gitrepositories'),
-		OCIRepos: await fetch_view('ocirepositories')
+		HelmRepos,
+		HelmCharts,
+		HelmReleases,
+		Kustomizations,
+		GitRepos,
+		OCIRepos
 	};
 }

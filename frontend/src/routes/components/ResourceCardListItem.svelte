@@ -15,13 +15,13 @@
 	let modalContent = '';
 
 	let label = `${resource.namespace}/${resource.name}`;
+	let statusText = 'Unknown';
 	let statusClasses = 'text-right';
-	if (resource.status == 'Ready') {
-		// TODO: Re-implement status condition true/false in API layer
-		// statusClasses += ' ';
-		// statusClasses += resource.status.toLowerCase() == 'true' ? 'text-green-400' : 'text-red-400';
+	if (resource.conditions.some((c) => c.type == 'Ready' && c.status == 'True')) {
+		statusText = 'Ready';
 		statusClasses += ' text-green-400';
-	} else if (resource.status == 'Reconciling') {
+	} else if (resource.conditions.some((c) => c.type == 'Reconciling' && c.status == 'True')) {
+		statusText = 'Reconciling';
 		statusClasses += ' text-orange-500';
 	}
 </script>
@@ -31,7 +31,7 @@
 	on:click={handleClick}
 >
 	<span class="text-left col-span-4">{label}</span>
-	<span class={statusClasses}>{resource.status}</span>
+	<span class={statusClasses}>{statusText}</span>
 </button>
 
 <Modal title={modalTitle} size="lg" bind:open={modalVisible} outsideclose>
