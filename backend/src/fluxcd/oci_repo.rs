@@ -9,7 +9,7 @@ use rocket::serde::Serialize;
 pub struct OCIRepoView {
     name: String,
     namespace: String,
-    source: String,
+    url: String,
     conditions: Vec<Condition>,
     target_ref: VersionRef,
     interval: String,
@@ -21,7 +21,7 @@ impl From<OCIRepository> for OCIRepoView {
         OCIRepoView {
             name: repo.metadata.name.unwrap_or_default(),
             namespace: repo.metadata.namespace.unwrap_or_default(),
-            source: repo.spec.url,
+            url: repo.spec.url,
             conditions: match repo.status {
                 Some(status) => status.conditions.unwrap_or_default(),
                 None => vec![],

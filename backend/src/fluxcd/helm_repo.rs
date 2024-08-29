@@ -10,6 +10,7 @@ pub struct HelmRepoView {
     url: String,
     conditions: Vec<Condition>,
     suspended: bool,
+    interval: String,
 }
 
 impl From<HelmRepository> for HelmRepoView {
@@ -23,6 +24,7 @@ impl From<HelmRepository> for HelmRepoView {
                 None => vec![],
             },
             suspended: hr.spec.suspend.unwrap_or(false),
+            interval: hr.spec.interval.unwrap_or_default(),
         }
     }
 }

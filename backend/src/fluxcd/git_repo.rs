@@ -9,7 +9,7 @@ use rocket::serde::Serialize;
 pub struct GitRepoView {
     name: String,
     namespace: String,
-    source: String,
+    url: String,
     target_ref: VersionRef,
     conditions: Vec<Condition>,
     interval: String,
@@ -21,7 +21,7 @@ impl From<GitRepository> for GitRepoView {
         GitRepoView {
             name: gr.metadata.name.unwrap_or_default(),
             namespace: gr.metadata.namespace.unwrap_or_default(),
-            source: gr.spec.url,
+            url: gr.spec.url,
             conditions: match gr.status {
                 Some(status) => status.conditions.unwrap_or(vec![]),
                 None => vec![],

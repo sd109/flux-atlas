@@ -12,6 +12,7 @@ pub struct HelmChartView {
     version: String,
     conditions: Vec<Condition>,
     suspended: bool,
+    interval: String,
 }
 
 impl From<HelmChart> for HelmChartView {
@@ -27,6 +28,7 @@ impl From<HelmChart> for HelmChartView {
                 None => vec![],
             },
             suspended: hc.spec.suspend.unwrap_or(false),
+            interval: hc.spec.interval,
         }
     }
 }
