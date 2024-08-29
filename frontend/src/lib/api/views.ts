@@ -1,7 +1,5 @@
 // Data structures for FluxCD and backend API responses
 
-// TODO: Test these data structures in frontend unit tests targetting backend API?
-
 // Shared types
 
 interface ResourceView<T> {
@@ -9,7 +7,6 @@ interface ResourceView<T> {
 	namespace: string;
 	suspended: boolean;
 	interval: string;
-	// conditions: SourceCondition[] | HelmReleaseCondition[] | KustomizationCondition[];
 	conditions: T[];
 }
 
@@ -44,32 +41,27 @@ interface SourceCondition extends ResourceCondition {
 interface GitRepoView extends ResourceView<SourceCondition> {
 	url: string;
 	target_ref: VersionRef;
-	// conditions: SourceCondition[];
 }
 
 interface OCIRepoView extends ResourceView<SourceCondition> {
 	url: string;
 	target_ref: VersionRef;
-	// conditions: SourceCondition[];
 }
 
 interface HelmRepoView extends ResourceView<SourceCondition> {
 	url: string;
-	// conditions: SourceCondition[];
 }
 
 interface HelmChartView extends ResourceView<SourceCondition> {
 	repo: string;
 	chart: string;
 	version: string;
-	// conditions: SourceCondition[];
 }
 
 // Helm
 
 interface HelmReleaseView extends ResourceView<HelmReleaseCondition> {
 	chart_ref: HelmChartRef;
-	// conditions: HelmReleaseCondition[];
 }
 
 interface HelmChartRef {
@@ -94,7 +86,6 @@ interface HelmReleaseCondition extends ResourceCondition {
 
 interface KustomizationView extends ResourceView<KustomizationCondition> {
 	source_ref: KustomizationSourceRef;
-	// conditions: KustomizationCondition[];
 }
 
 interface KustomizationSourceRef {
