@@ -1,21 +1,9 @@
 <script lang="ts">
 	import '../app.css';
-	import { Navbar, NavBrand, NavLi, NavUl, Toggle, NavHamburger, Spinner } from 'flowbite-svelte';
+	import { Navbar, NavBrand, NavUl, NavHamburger, Spinner } from 'flowbite-svelte';
 
-	import { goto, invalidate } from '$app/navigation';
-	import { compactToggle, isCompact } from '$lib';
-	import { beforeUpdate, onDestroy, onMount } from 'svelte';
-	import { page } from '$app/stores';
-
-	// If query param is provided then set compact state appropriately
-	beforeUpdate(() => {
-		compactToggle.set(isCompact($page.url, $compactToggle));
-	});
-
-	async function handleToggle() {
-		compactToggle.set(!$compactToggle);
-		await goto(`?compact=${$compactToggle}`);
-	}
+	import { invalidate } from '$app/navigation';
+	import { onDestroy } from 'svelte';
 
 	let refreshEnabled = true;
 	function handleRefresh() {
@@ -47,7 +35,7 @@
 			src="https://raw.githubusercontent.com/fluxcd/website/v2-3/assets/icons/logo.svg"
 			alt="Flux CD Logo"
 		/>
-		<span class="text-xl text-white ml-2"> Flux CD </span>
+		<span class="text-xl text-white ml-2"> <a href="/">Flux CD</a> </span>
 	</NavBrand>
 
 	<!-- Hamburger element is reactive menu shrinker / dropdown for small screens -->
@@ -66,17 +54,9 @@
 				<Spinner class="mx-3" size="6" />
 			{/if}
 		</button>
-
-		<NavLi>
-			<Toggle
-				class="md:text-white"
-				checked={isCompact($page.url, $compactToggle)}
-				on:change={handleToggle}
-			>
-				Compact View
-			</Toggle>
-		</NavLi>
 	</NavUl>
+
+	<!-- TODO: Add home icon / link -->
 </Navbar>
 
 <slot />

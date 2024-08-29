@@ -13,14 +13,3 @@ test('Basic overview page functionality', async ({ page }) => {
 	];
 	await Promise.all(resources.map(async (h) => await expect(page.getByText(h)).toBeVisible()));
 });
-
-test('Compact toggle alters grid layout', async ({ page }) => {
-	await page.goto('/');
-	let gridClass = await page.getByTestId('resources').getAttribute('class');
-	expect(gridClass?.includes('md:grid-cols-2')).toBe(true);
-
-	await page.getByText('Compact View').click({ delay: 500 });
-
-	gridClass = await page.getByTestId('resources').getAttribute('class');
-	expect(gridClass?.includes('md:grid-cols-2')).toBeFalsy();
-});

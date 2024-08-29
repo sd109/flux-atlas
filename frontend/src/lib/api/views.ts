@@ -4,12 +4,13 @@
 
 // Shared types
 
-interface ResourceView {
+interface ResourceView<T> {
 	name: string;
 	namespace: string;
 	suspended: boolean;
 	interval: string;
-	conditions: SourceCondition[] | HelmReleaseCondition[] | KustomizationCondition[];
+	// conditions: SourceCondition[] | HelmReleaseCondition[] | KustomizationCondition[];
+	conditions: T[];
 }
 
 interface VersionRef {
@@ -20,7 +21,7 @@ interface VersionRef {
 interface ResourceCondition {
 	status: 'True' | 'False';
 	reason: string;
-	timestamp: string;
+	lastTransitionTime: Date;
 	message: string;
 }
 
@@ -40,36 +41,35 @@ interface SourceCondition extends ResourceCondition {
 	type: SourceConditionType;
 }
 
-interface GitRepoView extends ResourceView {
+interface GitRepoView extends ResourceView<SourceCondition> {
 	url: string;
 	target_ref: VersionRef;
-	conditions: SourceCondition[];
+	// conditions: SourceCondition[];
 }
 
-interface OCIRepoView extends ResourceView {
+interface OCIRepoView extends ResourceView<SourceCondition> {
 	url: string;
 	target_ref: VersionRef;
-	conditions: SourceCondition[];
+	// conditions: SourceCondition[];
 }
 
-interface HelmRepoView extends ResourceView {
+interface HelmRepoView extends ResourceView<SourceCondition> {
 	url: string;
-	conditions: SourceCondition[];
+	// conditions: SourceCondition[];
 }
 
-interface HelmChartView extends ResourceView {
+interface HelmChartView extends ResourceView<SourceCondition> {
 	repo: string;
 	chart: string;
 	version: string;
-	conditions: SourceCondition[];
+	// conditions: SourceCondition[];
 }
 
 // Helm
 
-interface HelmReleaseView extends ResourceView {
+interface HelmReleaseView extends ResourceView<HelmReleaseCondition> {
 	chart_ref: HelmChartRef;
-	conditions: HelmReleaseCondition[];
-	interval: string;
+	// conditions: HelmReleaseCondition[];
 }
 
 interface HelmChartRef {
@@ -92,9 +92,9 @@ interface HelmReleaseCondition extends ResourceCondition {
 
 // Kustomization
 
-interface KustomizationView extends ResourceView {
+interface KustomizationView extends ResourceView<KustomizationCondition> {
 	source_ref: KustomizationSourceRef;
-	conditions: KustomizationCondition[];
+	// conditions: KustomizationCondition[];
 }
 
 interface KustomizationSourceRef {
