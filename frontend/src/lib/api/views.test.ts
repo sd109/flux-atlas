@@ -12,9 +12,7 @@ describe('API responses match interface definition', async () => {
 	];
 
 	it('Git repo view', async () => {
-		const repos: GitRepoView[] = await (
-			await fetch('http://localhost:8000/api/gitrepositories')
-		).json();
+		const repos: GitRepoView[] = await (await fetch('http://localhost:8000/api/git-repos')).json();
 		expect(repos.length).greaterThan(0);
 		repos.map((repo) => {
 			// Basic props
@@ -37,9 +35,7 @@ describe('API responses match interface definition', async () => {
 	});
 
 	it('OCI repo view', async () => {
-		const repos: OCIRepoView[] = await (
-			await fetch('http://localhost:8000/api/ocirepositories')
-		).json();
+		const repos: OCIRepoView[] = await (await fetch('http://localhost:8000/api/oci-repos')).json();
 		expect(repos.length).greaterThan(0);
 		repos.map((repo) => {
 			// Basic props
@@ -63,7 +59,7 @@ describe('API responses match interface definition', async () => {
 
 	it('Helm repo view', async () => {
 		const repos: HelmRepoView[] = await (
-			await fetch('http://localhost:8000/api/helmrepositories')
+			await fetch('http://localhost:8000/api/helm-repos')
 		).json();
 		expect(repos.length).greaterThan(0);
 		repos.map((repo) => {
@@ -86,7 +82,7 @@ describe('API responses match interface definition', async () => {
 
 	it('Helm chart view', async () => {
 		const charts: HelmChartView[] = await (
-			await fetch('http://localhost:8000/api/helmcharts')
+			await fetch('http://localhost:8000/api/helm-charts')
 		).json();
 		expect(charts.length).greaterThan(0);
 		charts.map((chart) => {
@@ -118,7 +114,7 @@ describe('API responses match interface definition', async () => {
 
 	it('Helm release view', async () => {
 		const kustomizations: HelmReleaseView[] = await (
-			await fetch('http://localhost:8000/api/helmreleases')
+			await fetch('http://localhost:8000/api/helm-releases')
 		).json();
 		expect(kustomizations.length).greaterThan(0);
 		kustomizations.map((k) => {
