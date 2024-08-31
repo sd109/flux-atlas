@@ -2,12 +2,21 @@ use kube::{
     api::{Api, ListParams},
     Client, Resource,
 };
-use rocket::{http::Status, serde::DeserializeOwned};
+use rocket::serde::DeserializeOwned;
 use std::fmt::Debug;
+use thiserror::Error;
+
+/// Enum of possible API error responses
+#[derive(Responder, Error, Debug)]
+pub enum ApiError<'a> {
+    #[error("Error: {:?}", .0)]
+    #[response(status = 503)]
+    KubernetesError(&'a str),
+}
 
 async fn list_resources<K: Resource + Debug + DeserializeOwned + Clone>(
     client: &Client,
-) -> Result<Vec<K>, Status>
+) -> Result<Vec<K>, ApiError>
 where
     <K as Resource>::DynamicType: Default,
 {
@@ -18,13 +27,13 @@ where
         .await
     {
         Ok(response) => Ok(response.items),
-        Err(_) => Err(Status::ServiceUnavailable),
+        Err(_) => Err(ApiError::KubernetesError("Kubernetes API unavailable")),
     }
 }
 
 pub async fn fetch_view<K: Debug + Clone + kube::Resource + DeserializeOwned, V>(
     client: &Client,
-) -> Result<Vec<V>, Status>
+) -> Result<Vec<V>, ApiError>
 where
     V: From<K>,
     <K as kube::Resource>::DynamicType: Default,

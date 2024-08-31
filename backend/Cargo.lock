@@ -369,6 +369,7 @@ dependencies = [
  "kube",
  "kube-custom-resources-rs",
  "rocket",
+ "thiserror",
 ]
 
 [[package]]

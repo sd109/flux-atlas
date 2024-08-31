@@ -14,64 +14,48 @@ use kube_custom_resources_rs::{
 };
 use rocket::{
     fairing::AdHoc,
-    http::Status,
     serde::{json::Json, Serialize},
     Request, State,
 };
 
 mod fluxcd;
 use fluxcd::{
-    fetch_view, GitRepoView, HelmChartView, HelmReleaseView, HelmRepoView, KustomizationView,
-    OCIRepoView,
+    utils::{fetch_view, ApiError},
+    GitRepoView, HelmChartView, HelmReleaseView, HelmRepoView, KustomizationView, OCIRepoView,
 };
 
 #[get("/git-repos")]
-async fn git_repos(client: &State<Client>) -> Json<Vec<GitRepoView>> {
-    Json(
-        fetch_view::<GitRepository, GitRepoView>(client)
-            .await
-            .unwrap(),
-    )
+async fn git_repos(client: &State<Client>) -> Result<Json<Vec<GitRepoView>>, ApiError> {
+    let response = fetch_view::<GitRepository, GitRepoView>(client).await?;
+    Ok(Json(response))
 }
 
 #[get("/oci-repos")]
-async fn oci_repos(client: &State<Client>) -> Json<Vec<OCIRepoView>> {
-    Json(
-        fetch_view::<OCIRepository, OCIRepoView>(client)
-            .await
-            .unwrap(),
-    )
+async fn oci_repos(client: &State<Client>) -> Result<Json<Vec<OCIRepoView>>, ApiError> {
+    let response = fetch_view::<OCIRepository, OCIRepoView>(client).await?;
+    Ok(Json(response))
 }
 
 #[get("/helm-repos")]
-async fn helm_repos(client: &State<Client>) -> Json<Vec<HelmRepoView>> {
-    Json(
-        fetch_view::<HelmRepository, HelmRepoView>(client)
-            .await
-            .unwrap(),
-    )
+async fn helm_repos(client: &State<Client>) -> Result<Json<Vec<HelmRepoView>>, ApiError> {
+    let response = fetch_view::<HelmRepository, HelmRepoView>(client).await?;
+    Ok(Json(response))
 }
 
 #[get("/helm-charts")]
-async fn helm_charts(client: &State<Client>) -> Json<Vec<HelmChartView>> {
-    Json(
-        fetch_view::<HelmChart, HelmChartView>(client)
-            .await
-            .unwrap(),
-    )
+async fn helm_charts(client: &State<Client>) -> Result<Json<Vec<HelmChartView>>, ApiError> {
+    let response = fetch_view::<HelmChart, HelmChartView>(client).await?;
+    Ok(Json(response))
 }
 
 #[get("/helm-releases")]
-async fn helm_releases(client: &State<Client>) -> Json<Vec<HelmReleaseView>> {
-    Json(
-        fetch_view::<HelmRelease, HelmReleaseView>(client)
-            .await
-            .unwrap(),
-    )
+async fn helm_releases(client: &State<Client>) -> Result<Json<Vec<HelmReleaseView>>, ApiError> {
+    let response = fetch_view::<HelmRelease, HelmReleaseView>(client).await?;
+    Ok(Json(response))
 }
 
 #[get("/kustomizations")]
-async fn kustomizations(client: &State<Client>) -> Result<Json<Vec<KustomizationView>>, Status> {
+async fn kustomizations(client: &State<Client>) -> Result<Json<Vec<KustomizationView>>, ApiError> {
     let response = fetch_view::<Kustomization, KustomizationView>(client).await?;
     Ok(Json(response))
 }
@@ -127,4 +111,70 @@ async fn rocket() -> _ {
                 response.set_header(cors_header);
             })
         }))
+}
+
+#[cfg(test)]
+mod test {
+
+    use super::*;
+    use rocket::{
+        async_test,
+        http::{ContentType, Status},
+        local::asynchronous::Client,
+    };
+
+    async fn make_client() -> Client {
+        Client::tracked(rocket().await)
+            .await
+            .expect("a valid rocket instance")
+    }
+
+    /// Test that all API routes have a CORS header
+    #[async_test]
+    async fn test_cors_header() {
+        let client = make_client().await;
+        for route in client.rocket().routes() {
+            let response = client.get(route.uri.path()).dispatch().await;
+            assert!(response.headers().contains("Access-Control-Allow-Origin"));
+        }
+    }
+
+    /// Test that all API endpoints return a
+    /// JSON + success response
+    #[async_test]
+    async fn test_api_responses_json() {
+        let client = make_client().await;
+        for route in client.rocket().routes() {
+            let response = client.get(route.uri.path()).dispatch().await;
+            println!("{:?}", response);
+            assert_eq!(
+                response.content_type().expect("content-type to be set"),
+                ContentType::JSON
+            );
+            assert_eq!(response.status(), Status::Ok);
+        }
+    }
+
+    /// Test that all API routes return an error response
+    /// when cluster is unreachable (e.g. when kube-context
+    /// is a kind cluster and docker is stopped).
+    #[ignore = "disable k8s cluster before running"]
+    #[async_test]
+    async fn test_cluster_unreachable() {
+        let client = make_client().await;
+        for route in client.rocket().routes() {
+            let response = client.get(route.uri.path()).dispatch().await;
+            println!("{:?}", response);
+            assert_eq!(response.status(), Status::ServiceUnavailable);
+            assert_eq!(
+                response.content_type().expect("content-type to be set"),
+                ContentType::Text
+            );
+        }
+    }
+
+    // #[test]
+    // fn test_errors() {
+    //     Err(ApiError::KubernetesError("test")).unwrap()
+    // }
 }

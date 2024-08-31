@@ -10,3 +10,4 @@ rocket = { version = "0.5.1", features = ["json"] }
 kube = { version = "0.93.1" }
 k8s-openapi = { version = "0.22.0", features = ["latest"] }
 kube-custom-resources-rs = { version = "2024.8.1", features = ["helm_toolkit_fluxcd_io", "kustomize_toolkit_fluxcd_io", "source_toolkit_fluxcd_io"] }
+thiserror = "1.0.63"
