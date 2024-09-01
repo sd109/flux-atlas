@@ -4,12 +4,14 @@ use kube_custom_resources_rs::kustomize_toolkit_fluxcd_io::v1::kustomizations::{
 };
 use rocket::serde::Serialize;
 
+use super::utils::SourceRef;
+
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct KustomizationView {
     name: String,
     namespace: String,
-    source_ref: SourceRef,
+    source_ref: SourceRef<KustomizationSourceRefKind>,
     conditions: Vec<Condition>,
     suspended: bool,
     interval: String,
@@ -34,14 +36,4 @@ impl From<Kustomization> for KustomizationView {
             interval: k.spec.interval,
         }
     }
-}
-
-// Utility types
-
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-struct SourceRef {
-    kind: KustomizationSourceRefKind,
-    name: String,
-    namespace: String,
 }

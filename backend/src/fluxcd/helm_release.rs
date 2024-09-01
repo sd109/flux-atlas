@@ -4,12 +4,14 @@ use kube_custom_resources_rs::helm_toolkit_fluxcd_io::v2::helmreleases::{
 };
 use rocket::serde::Serialize;
 
+use super::utils::SourceRef;
+
 #[derive(Serialize)]
 #[serde(crate = "rocket::serde")]
 pub struct HelmReleaseView {
     name: String,
     namespace: String,
-    chart_ref: ChartRef,
+    chart_ref: SourceRef<HelmReleaseChartRefKind>,
     conditions: Vec<Condition>,
     suspended: bool,
     interval: String,
@@ -23,7 +25,7 @@ impl From<HelmRelease> for HelmReleaseView {
             name: name.clone(),
             namespace: namespace.clone(),
             chart_ref: if let Some(chart_ref) = hr.spec.chart_ref {
-                ChartRef {
+                SourceRef {
                     kind: chart_ref.kind.into(),
                     name: chart_ref.name,
                     namespace: chart_ref.namespace.unwrap_or(namespace),
@@ -32,7 +34,7 @@ impl From<HelmRelease> for HelmReleaseView {
                 // Chart template semantics:
                 // https://fluxcd.io/flux/components/helm/helmreleases/#chart-template
                 match hr.spec.chart {
-                    Some(_) => ChartRef {
+                    Some(_) => SourceRef {
                         kind: HelmReleaseChartRefKind::HelmChart.into(),
                         name: format!("{}-{}", namespace, name),
                         namespace,
@@ -50,14 +52,4 @@ impl From<HelmRelease> for HelmReleaseView {
             interval: hr.spec.interval,
         }
     }
-}
-
-// Utility types
-
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-struct ChartRef {
-    kind: HelmReleaseChartRefKind,
-    name: String,
-    namespace: String,
 }

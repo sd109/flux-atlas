@@ -2,9 +2,18 @@ use kube::{
     api::{Api, ListParams},
     Client, Resource,
 };
-use rocket::serde::DeserializeOwned;
+use rocket::serde::{DeserializeOwned, Serialize};
 use std::fmt::Debug;
 use thiserror::Error;
+
+/// Generic Flux CD source reference
+#[derive(Serialize)]
+#[serde(crate = "rocket::serde")]
+pub struct SourceRef<T> {
+    pub kind: T,
+    pub name: String,
+    pub namespace: String,
+}
 
 /// Enum of possible API error responses
 #[derive(Responder, Error, Debug)]
