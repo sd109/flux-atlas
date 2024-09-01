@@ -27,7 +27,13 @@ where
         .await
     {
         Ok(response) => Ok(response.items),
-        Err(_) => Err(ApiError::KubernetesError("Kubernetes API unavailable")),
+        Err(kube::Error::Api(kube::core::ErrorResponse { code: 404, .. })) => Err(
+            ApiError::KubernetesError("Flux CRDs not installed on cluster"),
+        ),
+        Err(e) => {
+            println!("{:?}", e);
+            Err(ApiError::KubernetesError("Kubernetes API unavailable"))
+        }
     }
 }
 
