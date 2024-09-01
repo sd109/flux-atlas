@@ -1,9 +1,19 @@
 <script lang="ts">
 	import '../app.css';
-	import { Navbar, NavBrand, NavUl, NavHamburger, Spinner } from 'flowbite-svelte';
+	import {
+		Navbar,
+		NavBrand,
+		NavUl,
+		NavHamburger,
+		Spinner,
+		Breadcrumb,
+		BreadcrumbItem
+	} from 'flowbite-svelte';
 
 	import { invalidate } from '$app/navigation';
 	import { onDestroy } from 'svelte';
+
+	import { navBarTitle } from '$lib';
 
 	let refreshEnabled = true;
 	function handleRefresh() {
@@ -28,14 +38,24 @@
 
 <svelte:document on:keydown={handleKeydown} />
 
-<Navbar class="bg-black" fluid>
+<Navbar data-testid="navbar" class="bg-black" fluid>
 	<NavBrand>
 		<img
 			style="height:40px"
 			src="https://raw.githubusercontent.com/fluxcd/website/v2-3/assets/icons/logo.svg"
 			alt="Flux CD Logo"
 		/>
-		<span class="text-xl text-white ml-2"> <a href="/">Flux CD</a> </span>
+		<span class="text-xl text-white m-2"> <a href="/">Flux CD</a> </span>
+		{#if $navBarTitle}
+			<Breadcrumb>
+				<BreadcrumbItem
+					spanClass="ms-1 text-md text-white"
+					linkClass="ms-1 text-md text-white ms-2"
+				>
+					{$navBarTitle}
+				</BreadcrumbItem>
+			</Breadcrumb>
+		{/if}
 	</NavBrand>
 
 	<!-- Hamburger element is reactive menu shrinker / dropdown for small screens -->

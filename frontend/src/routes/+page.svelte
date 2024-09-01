@@ -1,10 +1,14 @@
 <script lang="ts">
-	import ResourceCard from './components/ResourceCard.svelte';
+	import CardGrid from './components/CardGrid.svelte';
+	import ResourceCard from './components/ResourceListCard.svelte';
 	export let data;
+
+	import { navBarTitle } from '$lib';
+	$navBarTitle = 'Overview';
 </script>
 
-<div data-testid="resources" class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 m-4">
-	{#each Object.entries(data) as [key, items]}
-		<ResourceCard {key} {items} />
+<CardGrid>
+	{#each Object.entries(data) as [title, items]}
+		<ResourceCard {title} {items} />
 	{/each}
-</div>
+</CardGrid>

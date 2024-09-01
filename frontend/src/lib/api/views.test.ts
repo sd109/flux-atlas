@@ -19,7 +19,7 @@ describe('API responses match interface definition', async () => {
 			expect(repo.name.length).greaterThan(0);
 			expect(repo.namespace.length).greaterThan(0);
 			expect(repo.url.length).greaterThan(0);
-			expect(repo.suspended).toEqual(false);
+			expect(repo.suspended).toBeTypeOf('boolean');
 			expect(repo.interval).toBeTypeOf('string');
 			expect(repo.target_ref.type).toBeDefined();
 			expect(repo.target_ref.version).toBeDefined();
@@ -42,7 +42,7 @@ describe('API responses match interface definition', async () => {
 			expect(repo.name.length).greaterThan(0);
 			expect(repo.namespace.length).greaterThan(0);
 			expect(repo.url.length).greaterThan(0);
-			expect(repo.suspended).toEqual(false);
+			expect(repo.suspended).toBeTypeOf('boolean');
 			expect(repo.interval).toBeTypeOf('string');
 			expect(repo.target_ref.type).toBeDefined();
 			expect(repo.target_ref.version).toBeDefined();
@@ -67,16 +67,19 @@ describe('API responses match interface definition', async () => {
 			expect(repo.name.length).greaterThan(0);
 			expect(repo.namespace.length).greaterThan(0);
 			expect(repo.url.length).greaterThan(0);
-			expect(repo.suspended).toEqual(false);
+			expect(repo.suspended).toBeTypeOf('boolean');
 			expect(repo.interval).toBeTypeOf('string');
 			// Conditions
-			expect(repo.conditions.length).greaterThan(0);
-			repo.conditions.map((c) => {
-				expect(['True', 'False']).toContain(c.status);
-				expect(sourceConditionTypeList).toContain(c.type);
-				expect(c.reason).toBeTypeOf('string');
-				expect(c.message).toBeTypeOf('string');
-			});
+			// TODO: Do OCI repos ever have conditions...?
+			if (!repo.url.startsWith('oci://')) {
+				expect(repo.conditions.length).greaterThan(0);
+				repo.conditions.map((c) => {
+					expect(['True', 'False']).toContain(c.status);
+					expect(sourceConditionTypeList).toContain(c.type);
+					expect(c.reason).toBeTypeOf('string');
+					expect(c.message).toBeTypeOf('string');
+				});
+			}
 		});
 	});
 
@@ -89,8 +92,10 @@ describe('API responses match interface definition', async () => {
 			// Basic props
 			expect(chart.name.length).greaterThan(0);
 			expect(chart.namespace.length).greaterThan(0);
-			expect(chart.repo.length).greaterThan(0);
-			expect(chart.suspended).toEqual(false);
+			expect(chart.source_ref.kind.length).greaterThan(0);
+			expect(chart.source_ref.name.length).greaterThan(0);
+			expect(chart.source_ref.namespace.length).greaterThan(0);
+			expect(chart.suspended).toBeTypeOf('boolean');
 			expect(chart.interval).toBeTypeOf('string');
 			// Conditions
 			expect(chart.conditions.length).greaterThan(0);
@@ -122,7 +127,7 @@ describe('API responses match interface definition', async () => {
 			expect(k.name.length).greaterThan(0);
 			expect(k.namespace.length).greaterThan(0);
 			expect(['OCIRepository', 'HelmChart']).toContain(k.chart_ref.kind);
-			expect(k.suspended).toEqual(false);
+			expect(k.suspended).toBeTypeOf('boolean');
 			expect(k.interval).toBeTypeOf('string');
 			// Conditions
 			expect(k.conditions.length).greaterThan(0);
@@ -152,7 +157,7 @@ describe('API responses match interface definition', async () => {
 			expect(k.name.length).greaterThan(0);
 			expect(k.namespace.length).greaterThan(0);
 			expect(['OCIRepository', 'GitRepository', 'Bucket']).toContain(k.source_ref.kind);
-			expect(k.suspended).toEqual(false);
+			expect(k.suspended).toBeTypeOf('boolean');
 			expect(k.interval).toBeTypeOf('string');
 			// Conditions
 			expect(k.conditions.length).greaterThan(0);

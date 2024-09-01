@@ -10,10 +10,10 @@ const config: PlaywrightTestConfig = {
 	},
 	testDir: 'tests',
 	testMatch: /(.+\.)?(test|spec)\.[jt]s/,
-	timeout: 30000,
 	use: {
 		testIdAttribute: 'data-testid'
 	},
+	timeout: 30000,
 	retries: 1,
 	projects: [
 		/* Test against desktop browsers */

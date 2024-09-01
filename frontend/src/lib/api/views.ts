@@ -22,6 +22,8 @@ interface ResourceCondition {
 	message: string;
 }
 
+type ConditionAny = SourceCondition | HelmReleaseCondition | KustomizationCondition;
+
 // Sources
 
 // Based on https://fluxcd.io/flux/components/source/gitrepositories/#conditions
@@ -53,9 +55,15 @@ interface HelmRepoView extends ResourceView<SourceCondition> {
 }
 
 interface HelmChartView extends ResourceView<SourceCondition> {
-	repo: string;
+	source_ref: HelmChartSourceRef;
 	chart: string;
 	version: string;
+}
+
+interface HelmChartSourceRef {
+	kind: 'HelmRepository' | 'GitRepository' | 'Bucket';
+	name: string;
+	namespace: string;
 }
 
 // Helm

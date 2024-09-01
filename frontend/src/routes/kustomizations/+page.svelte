@@ -1,13 +1,13 @@
 <script lang="ts">
 	import ResourceDetailsGrid from '../components/ResourceDetailsGrid.svelte';
-	import HelmRepoDetails from './HelmRepoDetails.svelte';
+	import KustomizationDetails from './KustomizationDetails.svelte';
 
 	export let data;
-	const key = 'HelmRepos';
+	const key = 'Kustomizations';
 </script>
 
 <ResourceDetailsGrid {data} {key}>
 	{#each data[key] as repo}
-		<HelmRepoDetails {repo} />
+		<KustomizationDetails k={repo} />
 	{/each}
 </ResourceDetailsGrid>
