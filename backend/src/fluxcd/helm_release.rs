@@ -17,24 +17,28 @@ pub struct HelmReleaseView {
 
 impl From<HelmRelease> for HelmReleaseView {
     fn from(hr: HelmRelease) -> Self {
+        let name = hr.metadata.name.unwrap_or_default();
+        let namespace = hr.metadata.namespace.unwrap_or("default".to_string());
         HelmReleaseView {
-            name: hr.metadata.name.unwrap_or_default(),
-            namespace: hr.metadata.namespace.clone().unwrap_or_default(),
+            name: name.clone(),
+            namespace: namespace.clone(),
             chart_ref: if let Some(chart_ref) = hr.spec.chart_ref {
                 ChartRef {
                     kind: chart_ref.kind.into(),
                     name: chart_ref.name,
-                    namespace: chart_ref
-                        .namespace
-                        .unwrap_or(hr.metadata.namespace.unwrap_or("default".to_string())),
+                    namespace: chart_ref.namespace.unwrap_or(namespace),
                 }
             } else {
+                // Chart template semantics:
+                // https://fluxcd.io/flux/components/helm/helmreleases/#chart-template
                 match hr.spec.chart {
-                    Some(chart) => ChartRef {
+                    Some(_) => ChartRef {
                         kind: HelmReleaseChartRefKind::HelmChart.into(),
-                        name: chart.spec.chart,
-                        namespace: hr.metadata.namespace.unwrap_or("default".to_string()),
+                        name: format!("{}-{}", namespace, name),
+                        namespace,
                     },
+                    // Shouldn't happen, FluxCD docs state that either spec.chart_ref
+                    // or spec.chart will always be populated.
                     None => panic!(),
                 }
             },
