@@ -75,8 +75,6 @@
 			{/if}
 		</button>
 	</NavUl>
-
-	<!-- TODO: Add home icon / link -->
 </Navbar>
 
 <slot />

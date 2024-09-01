@@ -79,7 +79,6 @@ test('Helm chart to source navigation', async ({ page }) => {
 });
 
 test('Kustomization to source navigation', async ({ page }) => {
-	// TODO: Write a test here
 	const home = '/kustomizations';
 	await page.goto(home);
 	const cards = page.getByTestId('resource-details-card');
