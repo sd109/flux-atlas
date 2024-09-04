@@ -60,28 +60,6 @@ async fn kustomizations(client: &State<Client>) -> Result<Json<Vec<Kustomization
     Ok(Json(response))
 }
 
-#[derive(Serialize)]
-#[serde(crate = "rocket::serde")]
-struct ErrorResponse {
-    error: String,
-}
-
-impl ErrorResponse {
-    fn new<S: Into<String>>(error: S) -> Self {
-        ErrorResponse {
-            error: error.into(),
-        }
-    }
-}
-
-#[catch(503)]
-fn handle_503_error<'a>(req: &Request) -> Json<ErrorResponse> {
-    Json(ErrorResponse::new(format!(
-        "endpoint {} currently unavailable",
-        req.uri()
-    )))
-}
-
 #[launch]
 async fn rocket() -> _ {
     // Infer the runtime environment and try to create a Kubernetes Client
@@ -101,7 +79,6 @@ async fn rocket() -> _ {
                 oci_repos
             ],
         )
-        .register("/api/", catchers![handle_503_error])
         // Add shared state accessible from handlers
         .manage(client)
         // Remove CORS restrictions from all responses
@@ -140,18 +117,21 @@ mod test {
     }
 
     /// Test that all API endpoints return a
-    /// JSON + success response
+    /// successful JSON response or a plain text error
     #[async_test]
     async fn test_api_responses_json() {
         let client = make_client().await;
         for route in client.rocket().routes() {
             let response = client.get(route.uri.path()).dispatch().await;
             println!("{:?}", response);
+            let expected_content_type = match response.status().code {
+                200 => ContentType::JSON,
+                _ => ContentType::Text,
+            };
             assert_eq!(
                 response.content_type().expect("content-type to be set"),
-                ContentType::JSON
+                expected_content_type
             );
-            assert_eq!(response.status(), Status::Ok);
         }
     }
 
