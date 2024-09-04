@@ -2,10 +2,6 @@ import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { error } from '@sveltejs/kit';
 
-// TODO: remove this after testing api/ui
-// communication in containerised context.
-export const ssr = false;
-
 function toTimeStamps<C extends ResourceCondition, T extends ResourceView<C>>(resource: T): T {
 	resource.conditions = resource.conditions.map((c) => {
 		c.lastTransitionTime = new Date(c.lastTransitionTime);
