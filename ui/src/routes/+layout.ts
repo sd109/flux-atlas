@@ -1,4 +1,9 @@
+import { env } from '$env/dynamic/private';
 import { error } from '@sveltejs/kit';
+
+// TODO: remove this after testing api/ui
+// communication in containerised context.
+export const ssr = false;
 
 function toTimeStamps<C extends ResourceCondition, T extends ResourceView<C>>(resource: T): T {
 	resource.conditions = resource.conditions.map((c) => {
@@ -15,7 +20,7 @@ export async function load({ fetch, depends }) {
 	async function fetch_view<C extends ResourceCondition, T extends ResourceView<C>>(
 		resource: string
 	): Promise<T[]> {
-		const baseUrl = 'http://localhost:8000/api/';
+		const baseUrl = env.FLUX_ATLAS_API_ADDRESS;
 		const response = await fetch(new URL(resource, baseUrl));
 		if (!response.ok) throw Error(await response.text());
 		const resources: T[] = await response.json();
