@@ -1,3 +1,4 @@
+# TODO: Adapt this to work with new backend server
 name: Playwright Tests
 on:
   push:
