@@ -1,4 +1,5 @@
-import { env } from '$env/dynamic/private';
+import { browser } from '$app/environment';
+import { env } from '$env/dynamic/public';
 import { error } from '@sveltejs/kit';
 
 // TODO: remove this after testing api/ui
@@ -20,7 +21,11 @@ export async function load({ fetch, depends }) {
 	async function fetch_view<C extends ResourceCondition, T extends ResourceView<C>>(
 		resource: string
 	): Promise<T[]> {
-		const baseUrl = env.FLUX_ATLAS_API_ADDRESS;
+		// TODO: Make this more flexible
+		const baseUrl = browser
+			? env.PUBLIC_FLUX_ATLAS_API_ADDRESS
+			: 'http://flux-atlas-api.default.svc/api/';
+
 		const response = await fetch(new URL(resource, baseUrl));
 		if (!response.ok) throw Error(await response.text());
 		const resources: T[] = await response.json();
