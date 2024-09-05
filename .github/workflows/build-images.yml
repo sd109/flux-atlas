@@ -2,6 +2,13 @@ name: Build and publish container images
 
 on:
   push:
+    # TODO: Limit builds to relevant paths?
+    # paths:
+    #   - api/src/**.rs
+    #   - api/Cargo.*
+    #   - api/src/Dockerfile
+    #   - ui/src/
+    #   - ui/Dockerfile
 
 env:
   REGISTRY: ghcr.io
@@ -10,16 +17,19 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
 jobs:
+  run-tests:
+    uses: ./.github/workflows/integration-tests.yml
+
   build-and-push-image:
+    needs: run-tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
         component:
           - api
           - ui
-    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+
     permissions:
       contents: read
       packages: write
