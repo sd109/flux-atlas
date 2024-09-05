@@ -14,8 +14,7 @@ use kube_custom_resources_rs::{
 };
 use rocket::{
     fairing::AdHoc,
-    serde::{json::Json, Serialize},
-    Request, State,
+    serde::{json::Json}, State,
 };
 
 mod fluxcd;

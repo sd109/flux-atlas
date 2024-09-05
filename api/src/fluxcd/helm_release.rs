@@ -26,7 +26,7 @@ impl From<HelmRelease> for HelmReleaseView {
             namespace: namespace.clone(),
             chart_ref: if let Some(chart_ref) = hr.spec.chart_ref {
                 SourceRef {
-                    kind: chart_ref.kind.into(),
+                    kind: chart_ref.kind,
                     name: chart_ref.name,
                     namespace: chart_ref.namespace.unwrap_or(namespace),
                 }
@@ -35,7 +35,7 @@ impl From<HelmRelease> for HelmReleaseView {
                 // https://fluxcd.io/flux/components/helm/helmreleases/#chart-template
                 match hr.spec.chart {
                     Some(_) => SourceRef {
-                        kind: HelmReleaseChartRefKind::HelmChart.into(),
+                        kind: HelmReleaseChartRefKind::HelmChart,
                         name: format!("{}-{}", namespace, name),
                         namespace,
                     },
