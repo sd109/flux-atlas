@@ -2,13 +2,9 @@ name: Build and publish container images
 
 on:
   push:
-    # TODO: Limit builds to relevant paths?
-    # paths:
-    #   - api/src/**.rs
-    #   - api/Cargo.*
-    #   - api/src/Dockerfile
-    #   - ui/src/
-    #   - ui/Dockerfile
+    paths:
+      - api/
+      - ui/
 
 env:
   REGISTRY: ghcr.io
