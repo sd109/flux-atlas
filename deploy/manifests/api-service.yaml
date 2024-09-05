@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: flux-atlas
+  name: flux-atlas-api
 spec:
   selector:
-    app: flux-atlas
+    app: flux-atlas-api
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 3000
+      targetPort: http
