@@ -46,7 +46,7 @@ jobs:
 
       - name: Install UI dependencies
         working-directory: ui
-        run: cd ui && npm ci
+        run: npm ci
 
       - name: Install Playwright Browsers
         working-directory: ui
