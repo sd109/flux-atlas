@@ -1,16 +1,17 @@
-# TODO: Adapt this to work with new backend server
-name: Playwright Tests
+name: Run tests
+
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  # workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
-    timeout-minutes: 60
+  run_tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
 
@@ -28,21 +29,33 @@ jobs:
 
       - name: Apply test manifests
         run: |
-          kubectl apply -f tests/manifests/namespaces.yml --wait
-          kubectl apply -f tests/manifests
+          kubectl apply -f tests/manifests --wait
 
-      - uses: actions/setup-node@v4
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Run API unit tests
+        run: |
+          cd api/
+          cargo build
+          cargo test
+
+      - name: Setup UI toolchain
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install dependencies
+      - name: Install UI dependencies
         run: npm ci
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: Run Playwright tests
-        run: npx playwright test
+      - name: Run UI tests
+        run: |
+          cd api && cargo run &
+          cd ../ui/
+          npm test
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
