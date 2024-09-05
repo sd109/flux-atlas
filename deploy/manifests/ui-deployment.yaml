@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flux-atlas-ui
+  labels:
+    app: flux-atlas-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flux-atlas-ui
+  template:
+    metadata:
+      labels:
+        app: flux-atlas-ui
+    spec:
+      serviceAccountName: flux-atlas
+      containers:
+        - name: flux-atlas-ui
+          # TODO: Change this to a stable tag
+          image: ghcr.io/sd109/flux-atlas-ui:feat-rocket-api
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: FLUX_ATLAS_API_ADDRESS
+              value: http://flux-atlas-api.default.svc/api/
+          # TODO: Remove this
+          imagePullPolicy: Always

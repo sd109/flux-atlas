@@ -17,50 +17,50 @@ subjects:
   - kind: ServiceAccount
     name: flux-atlas
     namespace: default
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: flux-atlas-extra
-rules:
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  - services
-  - namespaces
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - apps
-  resources:
-  - daemonsets
-  - daemonsets/status
-  - deployments
-  - deployments/scale
-  - deployments/status
-  - replicasets
-  - replicasets/scale
-  - replicasets/status
-  - statefulsets
-  - statefulsets/scale
-  - statefulsets/status
-  verbs:
-  - get
-  - list
-  - watch
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: flux-atlas-extra
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: flux-atlas-extra
-subjects:
-  - kind: ServiceAccount
-    name: flux-atlas
-    namespace: default
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRole
+# metadata:
+#   name: flux-atlas-extra
+# rules:
+# - apiGroups:
+#   - ""
+#   resources:
+#   - pods
+#   - services
+#   - namespaces
+#   verbs:
+#   - get
+#   - list
+#   - watch
+# - apiGroups:
+#   - apps
+#   resources:
+#   - daemonsets
+#   - daemonsets/status
+#   - deployments
+#   - deployments/scale
+#   - deployments/status
+#   - replicasets
+#   - replicasets/scale
+#   - replicasets/status
+#   - statefulsets
+#   - statefulsets/scale
+#   - statefulsets/status
+#   verbs:
+#   - get
+#   - list
+#   - watch
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   name: flux-atlas-extra
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: ClusterRole
+#   name: flux-atlas-extra
+# subjects:
+#   - kind: ServiceAccount
+#     name: flux-atlas
+#     namespace: default
