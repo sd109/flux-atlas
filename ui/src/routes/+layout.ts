@@ -2,6 +2,11 @@ import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { error } from '@sveltejs/kit';
 
+// Disable server-side rendering so that
+// SSR fetch requests don't get trapped in container
+// when URL is localhost...
+export const ssr = false;
+
 function toTimeStamps<C extends ResourceCondition, T extends ResourceView<C>>(resource: T): T {
 	resource.conditions = resource.conditions.map((c) => {
 		c.lastTransitionTime = new Date(c.lastTransitionTime);
@@ -17,10 +22,7 @@ export async function load({ fetch, depends }) {
 	async function fetch_view<C extends ResourceCondition, T extends ResourceView<C>>(
 		resource: string
 	): Promise<T[]> {
-		// TODO: Make this more flexible
-		const baseUrl = browser
-			? env.PUBLIC_FLUX_ATLAS_API_ADDRESS
-			: 'http://flux-atlas-api.default.svc/api/';
+		const baseUrl = env.PUBLIC_FLUX_ATLAS_API_ADDRESS || 'http://localhost:8000/api/';
 
 		const response = await fetch(new URL(resource, baseUrl));
 		if (!response.ok) throw Error(await response.text());
