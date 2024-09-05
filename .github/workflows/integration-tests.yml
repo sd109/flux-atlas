@@ -35,7 +35,10 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
 
       - name: Run API unit tests
-        run: cd api && cargo build && cargo test
+        working-directory: api
+        run: |
+          cargo build
+          cargo test
 
       - name: Setup UI toolchain
         uses: actions/setup-node@v4
@@ -43,15 +46,17 @@ jobs:
           node-version: 22
 
       - name: Install UI dependencies
+        working-directory: ui
         run: cd ui && npm ci
 
       - name: Install Playwright Browsers
+        working-directory: ui
         run: npx playwright install --with-deps
 
       - name: Run UI tests
         run: |
           cd api && cargo run &
-          cd ../ui/ && npm test
+          cd ui && npm test
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
