@@ -3,10 +3,12 @@
 
 set -ex
 
+stat kind.sh > /dev/null
+
 kind create cluster -n flux-atlas-testing
 
 flux install
 
-kubectl apply -f ../manifests
+kubectl apply -f ./manifests
 
-kubectl apply -f ../../ui/tests/manifests
+kubectl apply -f ../ui/tests/manifests
