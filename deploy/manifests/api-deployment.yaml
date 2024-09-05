@@ -17,6 +17,7 @@ spec:
       serviceAccountName: flux-atlas
       containers:
         - name: flux-atlas-api
+          # TODO: Change this to a stable tag
           image: ghcr.io/sd109/flux-atlas-api:feat-rocket-api
           ports:
             - name: http
