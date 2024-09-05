@@ -29,7 +29,7 @@ jobs:
 
       - name: Apply test manifests
         run: |
-          kubectl apply -f tests/manifests --wait
+          kubectl apply -f ui/tests/manifests --wait
 
       - name: Setup Rust toolchain
         uses: actions-rust-lang/setup-rust-toolchain@v1
