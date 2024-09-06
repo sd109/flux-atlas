@@ -35,24 +35,27 @@
 			console.log(`Key pressed: cmd + ${event.key}`);
 		}
 	}
+
+	const textStyle = 'text-white text-md hover:text-slate-400';
 </script>
 
 <svelte:document on:keydown={handleKeydown} />
 
 <Navbar data-testid="navbar" class="bg-black" fluid>
 	<NavBrand>
-		<img
-			style="height:40px"
-			src="https://raw.githubusercontent.com/fluxcd/website/v2-3/assets/icons/logo.svg"
-			alt="Flux CD Logo"
-		/>
-		<A class="text-xl text-white" href="/">Flux CD</A>
 		{#if $navBarTitle}
 			<Breadcrumb>
-				<BreadcrumbItem
-					spanClass="ms-1 text-md text-white"
-					linkClass="ms-1 text-md text-white ms-2"
-				>
+				<BreadcrumbItem href="/" classSpan={textStyle} classHome={textStyle} home>
+					<svelte:fragment slot="icon">
+						<img
+							class="h-10 me-4"
+							src="https://raw.githubusercontent.com/fluxcd/website/v2-3/assets/icons/logo.svg"
+							alt="Flux CD Logo"
+						/>
+					</svelte:fragment>
+					Flux CD
+				</BreadcrumbItem>
+				<BreadcrumbItem classSpan={textStyle}>
 					{$navBarTitle}
 				</BreadcrumbItem>
 			</Breadcrumb>
@@ -64,11 +67,7 @@
 
 	<NavUl>
 		<!-- Only use white text above Hamburger break point -->
-		<button
-			class="md:text-white hover:text-slate-300"
-			on:click={handleRefresh}
-			disabled={!refreshEnabled}
-		>
+		<button class={textStyle} on:click={handleRefresh} disabled={!refreshEnabled}>
 			{#if refreshEnabled}
 				Refresh
 			{:else}
