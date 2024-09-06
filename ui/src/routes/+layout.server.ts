@@ -25,6 +25,7 @@ export async function load({ fetch, depends }) {
 	}
 
 	try {
+		// TODO: Make these fetches concurrently and then await all
 		const GitRepos: GitRepoView[] = await fetch_view('git-repos');
 		const OCIRepos: OCIRepoView[] = await fetch_view('oci-repos');
 		const HelmRepos: HelmRepoView[] = await fetch_view('helm-repos');

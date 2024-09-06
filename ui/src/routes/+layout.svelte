@@ -7,7 +7,8 @@
 		NavHamburger,
 		Spinner,
 		Breadcrumb,
-		BreadcrumbItem
+		BreadcrumbItem,
+		A
 	} from 'flowbite-svelte';
 
 	import { invalidate } from '$app/navigation';
@@ -45,7 +46,7 @@
 			src="https://raw.githubusercontent.com/fluxcd/website/v2-3/assets/icons/logo.svg"
 			alt="Flux CD Logo"
 		/>
-		<span class="text-xl text-white m-2"> <a href="/">Flux CD</a> </span>
+		<A class="text-xl text-white" href="/">Flux CD</A>
 		{#if $navBarTitle}
 			<Breadcrumb>
 				<BreadcrumbItem
