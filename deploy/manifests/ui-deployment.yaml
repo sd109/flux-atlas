@@ -18,7 +18,7 @@ spec:
       containers:
         - name: flux-atlas-ui
           # TODO: Change this to a stable tag
-          image: ghcr.io/sd109/flux-atlas-ui:feat-rocket-api
+          image: ghcr.io/sd109/flux-atlas-ui:main
           ports:
             - name: http
               containerPort: 3000
