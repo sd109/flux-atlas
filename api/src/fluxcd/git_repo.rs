@@ -14,10 +14,13 @@ pub struct GitRepoView {
     conditions: Vec<Condition>,
     interval: String,
     suspended: bool,
+    yaml: String,
 }
 
 impl From<GitRepository> for GitRepoView {
     fn from(gr: GitRepository) -> Self {
+        let yaml = serde_yaml::to_string(&gr.clone()).expect("GitRepo to be yaml serializable");
+
         GitRepoView {
             name: gr.metadata.name.unwrap_or_default(),
             namespace: gr.metadata.namespace.unwrap_or_default(),
@@ -29,6 +32,7 @@ impl From<GitRepository> for GitRepoView {
             target_ref: gr.spec.r#ref.into(),
             interval: gr.spec.interval,
             suspended: gr.spec.suspend.unwrap_or(false),
+            yaml,
         }
     }
 }

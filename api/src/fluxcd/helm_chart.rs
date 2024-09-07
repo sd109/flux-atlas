@@ -17,11 +17,14 @@ pub struct HelmChartView {
     conditions: Vec<Condition>,
     suspended: bool,
     interval: String,
+    yaml: String,
 }
 
 impl From<HelmChart> for HelmChartView {
     fn from(hc: HelmChart) -> Self {
+        let yaml = serde_yaml::to_string(&hc.clone()).expect("HelmChart to be yaml serializable");
         let namespace = hc.metadata.namespace.unwrap_or("default".to_string());
+
         HelmChartView {
             name: hc.metadata.name.unwrap_or_default(),
             namespace: namespace.clone(),
@@ -38,6 +41,7 @@ impl From<HelmChart> for HelmChartView {
             },
             suspended: hc.spec.suspend.unwrap_or(false),
             interval: hc.spec.interval,
+            yaml,
         }
     }
 }

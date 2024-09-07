@@ -19,6 +19,7 @@ describe('API responses match interface definition', async () => {
 			expect(repo.name.length).greaterThan(0);
 			expect(repo.namespace.length).greaterThan(0);
 			expect(repo.url.length).greaterThan(0);
+			expect(repo.yaml.length).greaterThan(0);
 			expect(repo.suspended).toBeTypeOf('boolean');
 			expect(repo.interval).toBeTypeOf('string');
 			expect(repo.target_ref.type).toBeDefined();
@@ -42,6 +43,7 @@ describe('API responses match interface definition', async () => {
 			expect(repo.name.length).greaterThan(0);
 			expect(repo.namespace.length).greaterThan(0);
 			expect(repo.url.length).greaterThan(0);
+			expect(repo.yaml.length).greaterThan(0);
 			expect(repo.suspended).toBeTypeOf('boolean');
 			expect(repo.interval).toBeTypeOf('string');
 			expect(repo.target_ref.type).toBeDefined();
@@ -67,6 +69,7 @@ describe('API responses match interface definition', async () => {
 			expect(repo.name.length).greaterThan(0);
 			expect(repo.namespace.length).greaterThan(0);
 			expect(repo.url.length).greaterThan(0);
+			expect(repo.yaml.length).greaterThan(0);
 			expect(repo.suspended).toBeTypeOf('boolean');
 			expect(repo.interval).toBeTypeOf('string');
 			// Conditions
@@ -92,6 +95,7 @@ describe('API responses match interface definition', async () => {
 			// Basic props
 			expect(chart.name.length).greaterThan(0);
 			expect(chart.namespace.length).greaterThan(0);
+			expect(chart.yaml.length).greaterThan(0);
 			expect(chart.source_ref.kind.length).greaterThan(0);
 			expect(chart.source_ref.name.length).greaterThan(0);
 			expect(chart.source_ref.namespace.length).greaterThan(0);
@@ -118,20 +122,21 @@ describe('API responses match interface definition', async () => {
 	];
 
 	it('Helm release view', async () => {
-		const kustomizations: HelmReleaseView[] = await (
+		const helmreleases: HelmReleaseView[] = await (
 			await fetch('http://localhost:8000/api/helm-releases')
 		).json();
-		expect(kustomizations.length).greaterThan(0);
-		kustomizations.map((k) => {
+		expect(helmreleases.length).greaterThan(0);
+		helmreleases.map((hr) => {
 			// Basic props
-			expect(k.name.length).greaterThan(0);
-			expect(k.namespace.length).greaterThan(0);
-			expect(['OCIRepository', 'HelmChart']).toContain(k.chart_ref.kind);
-			expect(k.suspended).toBeTypeOf('boolean');
-			expect(k.interval).toBeTypeOf('string');
+			expect(hr.name.length).greaterThan(0);
+			expect(hr.namespace.length).greaterThan(0);
+			expect(hr.yaml.length).greaterThan(0);
+			expect(['OCIRepository', 'HelmChart']).toContain(hr.chart_ref.kind);
+			expect(hr.suspended).toBeTypeOf('boolean');
+			expect(hr.interval).toBeTypeOf('string');
 			// Conditions
-			expect(k.conditions.length).greaterThan(0);
-			k.conditions.map((c) => {
+			expect(hr.conditions.length).greaterThan(0);
+			hr.conditions.map((c) => {
 				expect(['True', 'False']).toContain(c.status);
 				expect(helmReleaseConditionList).toContain(c.type);
 				expect(c.reason).toBeTypeOf('string');
@@ -156,6 +161,7 @@ describe('API responses match interface definition', async () => {
 			// Basic props
 			expect(k.name.length).greaterThan(0);
 			expect(k.namespace.length).greaterThan(0);
+			expect(k.yaml.length).greaterThan(0);
 			expect(['OCIRepository', 'GitRepository', 'Bucket']).toContain(k.source_ref.kind);
 			expect(k.suspended).toBeTypeOf('boolean');
 			expect(k.interval).toBeTypeOf('string');

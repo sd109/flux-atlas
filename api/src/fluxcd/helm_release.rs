@@ -15,12 +15,15 @@ pub struct HelmReleaseView {
     conditions: Vec<Condition>,
     suspended: bool,
     interval: String,
+    yaml: String,
 }
 
 impl From<HelmRelease> for HelmReleaseView {
     fn from(hr: HelmRelease) -> Self {
+        let yaml = serde_yaml::to_string(&hr.clone()).expect("HelmRelease to be yaml serializable");
         let name = hr.metadata.name.unwrap_or_default();
         let namespace = hr.metadata.namespace.unwrap_or("default".to_string());
+
         HelmReleaseView {
             name: name.clone(),
             namespace: namespace.clone(),
@@ -50,6 +53,7 @@ impl From<HelmRelease> for HelmReleaseView {
             },
             suspended: hr.spec.suspend.unwrap_or(false),
             interval: hr.spec.interval,
+            yaml,
         }
     }
 }

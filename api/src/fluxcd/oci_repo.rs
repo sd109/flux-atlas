@@ -14,10 +14,13 @@ pub struct OCIRepoView {
     target_ref: VersionRef,
     interval: String,
     suspended: bool,
+    yaml: String,
 }
 
 impl From<OCIRepository> for OCIRepoView {
     fn from(repo: OCIRepository) -> Self {
+        let yaml = serde_yaml::to_string(&repo.clone()).expect("OCIRepo to be yaml serializable");
+
         OCIRepoView {
             name: repo.metadata.name.unwrap_or_default(),
             namespace: repo.metadata.namespace.unwrap_or_default(),
@@ -29,6 +32,7 @@ impl From<OCIRepository> for OCIRepoView {
             target_ref: repo.spec.r#ref.into(),
             interval: repo.spec.interval,
             suspended: repo.spec.suspend.unwrap_or(false),
+            yaml,
         }
     }
 }

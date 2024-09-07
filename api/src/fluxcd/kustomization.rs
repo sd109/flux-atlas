@@ -15,11 +15,15 @@ pub struct KustomizationView {
     conditions: Vec<Condition>,
     suspended: bool,
     interval: String,
+    yaml: String,
 }
 
 impl From<Kustomization> for KustomizationView {
     fn from(k: Kustomization) -> Self {
+        let yaml =
+            serde_yaml::to_string(&k.clone()).expect("Kustomization to be yaml serializable");
         let ns = k.metadata.namespace.unwrap_or_default();
+
         KustomizationView {
             name: k.metadata.name.unwrap_or_default(),
             namespace: ns.clone(),
@@ -34,6 +38,7 @@ impl From<Kustomization> for KustomizationView {
             },
             suspended: k.spec.suspend.unwrap_or(false),
             interval: k.spec.interval,
+            yaml,
         }
     }
 }

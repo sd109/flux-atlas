@@ -8,6 +8,7 @@ interface ResourceView<T> {
 	suspended: boolean;
 	interval: string;
 	conditions: T[];
+	yaml: string;
 }
 
 interface VersionRef {

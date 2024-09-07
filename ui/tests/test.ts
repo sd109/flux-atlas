@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { parse } from 'yaml';
 
 test('Basic navigation functionality', async ({ page }) => {
 	await page.goto('/');
@@ -101,5 +102,37 @@ test('Kustomization to source navigation', async ({ page }) => {
 		// Heading's parent should be card with matching ID
 		await expect(sourceCardTitle.locator('..')).toHaveId(sourceTitle!);
 		await page.goto(home);
+	}
+});
+
+test('Yaml details modal', async ({ page }) => {
+	for (const resource of [
+		'gitrepos',
+		'ocirepos',
+		'helmrepos',
+		'helmcharts',
+		'helmreleases',
+		'kustomizations'
+	]) {
+		await page.goto('/' + resource);
+		const cards = await page.getByTestId('resource-details-card').all();
+		// Make sure we have at least 1 resource to test
+		expect(cards.length).toBeGreaterThan(0);
+		for (const card of cards) {
+			// Trigger modal
+			await card.getByRole('button').getByText('Details').click();
+			// Check modal content
+			const modal = page.getByTestId('details-modal');
+			await expect(modal.getByText('Resource Details')).toBeVisible();
+			let text = await modal.getByText('apiVersion').textContent();
+			expect(text).not.toBeNull();
+			const yaml = parse(text!);
+			expect(yaml.kind.toLowerCase()).toContain(resource.slice(0, resource.length - 1));
+			expect(yaml.apiVersion).toContain('fluxcd.io');
+			// Check that unwanted fields have been scrubbed
+			expect(yaml.metadata.managedFields).toBeUndefined();
+			// Close modal
+			await page.keyboard.press('Escape');
+		}
 	}
 });

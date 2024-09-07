@@ -2,11 +2,13 @@
 	export let resource: ResourceView<ConditionAny>;
 
 	import { Modal } from 'flowbite-svelte';
-	import { stringify } from 'yaml';
+	import { parse, stringify } from 'yaml';
 
 	function handleClick() {
 		modalVisible = true;
-		modalContent = stringify(resource);
+		let yaml = parse(resource.yaml);
+		delete yaml.metadata.managedFields;
+		modalContent = stringify(yaml);
 	}
 
 	let modalVisible = false;
@@ -20,7 +22,13 @@
 	Details
 </button>
 
-<Modal title="Resource Details" size="lg" bind:open={modalVisible} outsideclose>
+<Modal
+	title="Resource Details"
+	size="lg"
+	bind:open={modalVisible}
+	outsideclose
+	data-testid="details-modal"
+>
 	<div class="multiline border-0 object-fill">{modalContent}</div>
 </Modal>
 
