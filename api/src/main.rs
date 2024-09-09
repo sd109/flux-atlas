@@ -15,7 +15,6 @@ use kube_custom_resources_rs::{
     },
 };
 use rocket::{
-    fairing::AdHoc,
     futures::{AsyncBufReadExt, StreamExt},
     response::stream,
     serde::json::Json,
@@ -71,7 +70,7 @@ async fn stream_logs<'a>(
     mut shutdown: Shutdown,
 ) -> Result<stream::EventStream![], ApiError> {
     // Limit which controller logs are streamable
-    let controllers = vec!["helm", "source", "kustomize"];
+    let controllers = ["helm", "source", "kustomize"];
     if !controllers.contains(&name) {
         return Err(ApiError::ResourceNotFound(format!(
             "{} controller",

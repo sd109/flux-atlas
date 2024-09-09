@@ -85,5 +85,5 @@ where
         // cases where there are multiple matches
         return Ok(r);
     }
-    return Err(ApiError::ResourceNotFound(name.into()));
+    Err(ApiError::ResourceNotFound(name.into()))
 }
