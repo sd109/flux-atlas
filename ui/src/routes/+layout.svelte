@@ -7,14 +7,14 @@
 		NavHamburger,
 		Spinner,
 		Breadcrumb,
-		BreadcrumbItem,
-		A
+		BreadcrumbItem
 	} from 'flowbite-svelte';
 
 	import { invalidate } from '$app/navigation';
 	import { onDestroy } from 'svelte';
 
 	import { navBarTitle } from '$lib';
+	import LogsModal from './components/LogsModal.svelte';
 
 	let refreshEnabled = true;
 	function handleRefresh() {
@@ -37,6 +37,8 @@
 	}
 
 	const textStyle = 'text-white text-md hover:text-slate-400';
+
+	let modalVisible = false;
 </script>
 
 <svelte:document on:keydown={handleKeydown} />
@@ -66,6 +68,7 @@
 	<NavHamburger />
 
 	<NavUl>
+		<button class={textStyle} on:click={() => (modalVisible = !modalVisible)}>Flux Logs</button>
 		<!-- Only use white text above Hamburger break point -->
 		<button class={textStyle} on:click={handleRefresh} disabled={!refreshEnabled}>
 			{#if refreshEnabled}
@@ -76,5 +79,7 @@
 		</button>
 	</NavUl>
 </Navbar>
+
+<LogsModal bind:open={modalVisible} />
 
 <slot />
