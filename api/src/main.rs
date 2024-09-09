@@ -135,13 +135,6 @@ async fn rocket() -> _ {
         )
         // Add shared state accessible from handlers
         .manage(client)
-        // Remove CORS restrictions from all responses
-        .attach(AdHoc::on_response("CORS Header", |_, response| {
-            Box::pin(async move {
-                let cors_header = rocket::http::Header::new("Access-Control-Allow-Origin", "*");
-                response.set_header(cors_header);
-            })
-        }))
 }
 
 #[cfg(test)]
@@ -162,32 +155,26 @@ mod test {
             .expect("a valid rocket instance")
     }
 
-    /// Test that all API routes have a CORS header
-    #[async_test]
-    async fn test_cors_header() {
-        let client = make_client().await;
-        for route in client.rocket().routes() {
-            let response = client.get(route.uri.path()).dispatch().await;
-            assert!(response.headers().contains("Access-Control-Allow-Origin"));
-        }
-    }
-
-    /// Test that all API endpoints return a
-    /// successful JSON response or a plain text error
+    /// Test that all relevant API endpoints return a
+    /// successful JSON or SSE response or a plain text error
     #[async_test]
     async fn test_api_responses_json() {
         let client = make_client().await;
         for route in client.rocket().routes() {
-            let response = client.get(route.uri.path()).dispatch().await;
-            println!("{:?}", response);
-            let expected_content_type = match response.status().code {
-                200 => ContentType::JSON,
-                _ => ContentType::Text,
-            };
-            assert_eq!(
-                response.content_type().expect("content-type to be set"),
-                expected_content_type
-            );
+            let path = route.uri.path();
+            // Logs paths should return event stream not JSON
+            if !path.contains("<name>/logs") {
+                let response = client.get(path).dispatch().await;
+                println!("{:?}", response);
+                let expected_content_type = match response.status().code {
+                    200 => ContentType::JSON,
+                    _ => ContentType::Text,
+                };
+                assert_eq!(
+                    response.content_type().expect("content-type to be set"),
+                    expected_content_type
+                );
+            }
         }
     }
 
