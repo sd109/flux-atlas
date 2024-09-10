@@ -90,7 +90,7 @@ async fn stream_logs<'a>(
             &controller.name_any(),
             &LogParams {
                 follow: true,          // Follow is key for continual output stream
-                tail_lines: Some(100), // Limit line count to avoid overloading frontend
+                tail_lines: Some(300), // Limit line count to avoid overloading frontend
                 ..LogParams::default()
             },
         )

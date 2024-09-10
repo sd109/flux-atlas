@@ -5,9 +5,9 @@ export function POST({ params }) {
 	const url = `http://localhost:8000/api/controllers/${params.name}/logs`;
 	const source = new EventSource(url);
 
-	source.onopen = (event) => console.log('Event source opened:', event);
+	source.onopen = () => console.log('Connected to event source:', params.name);
 	source.onerror = () => {
-		console.log('Closing event source');
+		console.log('Closing event source:', params.name);
 		source.close();
 	};
 
@@ -15,6 +15,7 @@ export function POST({ params }) {
 		source.onmessage = (event) => {
 			const { error } = emit('message', event.data);
 			if (error) {
+				console.log('Connected to event source:', params.name);
 				source.close();
 				return;
 			}
