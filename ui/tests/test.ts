@@ -132,7 +132,37 @@ test('Yaml details modal', async ({ page }) => {
 			// Check that unwanted fields have been scrubbed
 			expect(yaml.metadata.managedFields).toBeUndefined();
 			// Close modal
+			// await page.getByLabel('Close modal').click();
 			await page.keyboard.press('Escape');
+			await expect(modal).not.toBeVisible();
 		}
 	}
+});
+
+test('Flux controller logs modal', async ({ page }) => {
+	// Should match id var in LogsModal component
+	const modalId = '#logs-lines-ul-element';
+
+	await page.goto('/');
+	await page.getByText('Flux Logs').click();
+	await expect(page.getByText('No logs')).not.toBeVisible();
+
+	// Check that we get a non-zero line count
+	let logCountText = page.getByText('matched lines');
+	await expect(logCountText).toBeVisible();
+	let count = (await logCountText.textContent())?.match(/^\d+/)?.join('');
+	expect(parseInt(count!)).toBeGreaterThan(0);
+
+	// Check for duplicate log lines which could indicate
+	// errors in lifecycle logic of server-side event sources
+	let logsElement = page.locator(modalId);
+	await expect(logsElement).toBeVisible();
+	let logLines = await logsElement.getByRole('listitem').allTextContents();
+	let uniqueLogLines = [...new Set(logLines)];
+	expect(uniqueLogLines.length).toEqual(logLines.length);
+
+	// Check that closing modal works
+	// await page.getByLabel('Close modal').click();
+	await page.keyboard.press('Escape');
+	await expect(logsElement).not.toBeVisible();
 });
