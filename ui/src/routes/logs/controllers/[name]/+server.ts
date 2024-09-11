@@ -1,9 +1,10 @@
 import EventSource from 'eventsource';
 import { produce } from 'sveltekit-sse';
+import { API_BASE_URL } from '../../../../config.js';
 
 export function POST({ params }) {
-	const url = `http://localhost:8000/api/controllers/${params.name}/logs`;
-	const source = new EventSource(url);
+	const url = new URL(`controllers/${params.name}/logs`, API_BASE_URL);
+	const source = new EventSource(url.toString());
 
 	source.onopen = () => console.log('Connected to event source:', params.name);
 	source.onerror = () => {

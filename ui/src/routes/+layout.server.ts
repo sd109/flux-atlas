@@ -1,5 +1,5 @@
-import { env } from '$env/dynamic/private';
 import { error } from '@sveltejs/kit';
+import { API_BASE_URL } from '../config.js';
 
 function toTimeStamps<C extends ResourceCondition, T extends ResourceView<C>>(resource: T): T {
 	resource.conditions = resource.conditions.map((c) => {
@@ -16,9 +16,7 @@ export async function load({ fetch, depends }) {
 	async function fetch_view<C extends ResourceCondition, T extends ResourceView<C>>(
 		resource: string
 	): Promise<T[]> {
-		const baseUrl = env.FLUX_ATLAS_API_ADDRESS || 'http://localhost:8000/api/';
-
-		const response = await fetch(new URL(resource, baseUrl));
+		const response = await fetch(new URL(resource, API_BASE_URL));
 		if (!response.ok) throw Error(await response.text());
 		const resources: T[] = await response.json();
 		return resources.map((r) => toTimeStamps(r));
